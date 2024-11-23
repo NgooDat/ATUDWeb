@@ -1,6 +1,8 @@
 package webshop.entity;
 
 
+import java.util.Date;
+
 import javax.persistence.*;
 
 @Entity
@@ -13,6 +15,9 @@ public class Feedback {
 
     @Column(name = "description")
     private String description;
+    
+    @Column(name = "create_time",nullable = true)
+    private Date createTime;
 
     @ManyToOne
     @JoinColumn(name = "customersID", nullable = false)
@@ -54,17 +59,26 @@ public class Feedback {
 		this.product = product;
 	}
 
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
 	public Feedback() {
 		super();
 	}
 
-	public Feedback(int id, String description, Customer customer, Product product) {
+	public Feedback(int id, String description, Date createTime, Customer customer, Product product) {
 		super();
 		this.id = id;
 		this.description = description;
+		this.createTime = createTime;
 		this.customer = customer;
 		this.product = product;
 	}
 
-    // Getters và Setters
+	
 }

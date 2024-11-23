@@ -25,20 +25,22 @@
 	
 	<!-- Cấu hình Hibernate -->
 	<bean id="sessionFactory" 
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-	    <property name="dataSource" ref="dataSource"/>
-	    <property name="hibernateProperties">
-	      <props>        
-	            <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>          
-	            <prop key="hibernate.show_sql">false</prop>
-	       </props>
-	    </property>
-		<property name="packagesToScan" value="webshop.entity"/>
-	</bean>
+      class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+    <property name="dataSource" ref="dataSource"/>
+    <property name="hibernateProperties">
+      <props>        
+        <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>          
+        <prop key="hibernate.show_sql">false</prop>
+      </props>
+    </property>
+    <property name="packagesToScan" value="webshop.entity"/>
+</bean>
+
 	
 	<!-- Transaction Manager -->
     <bean id="transactionManager" 
-    		class="org.springframework.orm.hibernate4.HibernateTransactionManager" 
-       		p:sessionFactory-ref="sessionFactory" />
-    <tx:annotation-driven transaction-manager="transactionManager" />
+      class="org.springframework.orm.hibernate4.HibernateTransactionManager">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+    <property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+
 </beans>

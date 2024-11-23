@@ -7,9 +7,10 @@ import javax.persistence.*;
 @Table(name = "sizes")
 public class Size {
     @Id
+    @Column(name = "ID")
     private String id;
 
-    @Column(nullable = false)
+    @Column(name = "name")
     private String name;
 
     @OneToMany(mappedBy = "size")

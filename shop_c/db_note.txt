@@ -23,21 +23,13 @@ phone (varchar(255)): Số điện thoại khách hàng.
 image (varchar(255)): Đường dẫn tới ảnh đại diện của khách hàng.
 +Mỗi khách hàng có thể có một tài khoản trong bảng accounts.
 
-5.invoices
-ID (int): Khóa chính, mã định danh hóa đơn.
-c_time (datetime): Thời gian tạo hóa đơn.
-ship_fee (int): Phí vận chuyển.
-product_fee (int): Tổng tiền sản phẩm.
-total (int): Tổng tiền hóa đơn (bao gồm cả phí vận chuyển)***đây là trường được tính tự động.
-payment_status (int): Trạng thái thanh toán(1 da thanh toan; 0 chua thanh toan).
-address (nvarchar(255)): Địa chỉ giao hàng.
-description (nvarchar(255)): Mô tả hóa đơn.
-+Hóa đơn bao gom nhiều chi tiết của các sản phẩm được đặt qua bảng invoice_details.
+5.orders:
+lưu trữ đơn hàng của khách hàng, bao gồm các thông tin như thời gian tạo (create_time), thời gian cập nhật (update_time), phí vận chuyển (ship_fee), phí sản phẩm (product_fee), tổng tiền (total), trạng thái thanh toán (payment_status), địa chỉ giao hàng (address), và các thông tin khác về đơn hàng.
+Quan hệ: Mỗi đơn hàng có một khách hàng (qua customersID).
 
-6.invoice_details
-quantity (int): Số lượng sản phẩm trong hóa đơn.
-unit_price (int): Giá một đơn vị sản phẩm.
-+Chi tiết hóa đơn cho biết cụ thể các sản phẩm trong mỗi hóa đơn, thông qua bảng product_details.
+6.order_details:
+Bảng này lưu trữ chi tiết từng sản phẩm trong mỗi đơn hàng, bao gồm số lượng (quantity), giá trị đơn vị (unit_price), và liên kết với đơn hàng (ordersID) và chi tiết sản phẩm (product_detailsID).
+Quan hệ: Mỗi chi tiết đơn hàng thuộc về một đơn hàng và một sản phẩm chi tiết.
 
 7.products
 ID (int): Khóa chính, mã định danh của sản phẩm.
@@ -58,7 +50,9 @@ total_price: lưu tổng số tiền cho mỗi mục trong giỏ (tính từ qua
 status (int): Trạng thái của sản phẩm trong giỏ hàng (ví dụ: đang chờ thanh toán).
 customersID (int): Khóa ngoại liên kết với bảng customers.
 product_detailsID (int): Khóa ngoại liên kết với bảng product_details.
-+sản phẩm trong giỏ hàng của mỗi khách hàng liên kết với chi tiết sản phẩm.
++Bảng này lưu trữ giỏ hàng của khách hàng. Mỗi giỏ hàng có một ID (ID), số lượng sản phẩm (quantity), tổng giá trị (total_price), trạng thái giỏ hàng (status), và liên kết với khách hàng (customersID) và chi tiết sản phẩm (product_detailsID).
+Quan hệ: Giỏ hàng thuộc về một khách hàng (qua customersID) và chứa các chi tiết sản phẩm (qua product_detailsID).
+
 
 10.feedbacks
 ID (int): Khóa chính, mã định danh phản hồi.

@@ -31,6 +31,17 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer")
     private Collection<Cart> carts;
+    
+    @OneToMany(mappedBy = "customer")
+    private Collection<Order> order;
+
+	public Collection<Order> getInvoices() {
+		return order;
+	}
+
+	public void setInvoices(Collection<Order> order) {
+		this.order = order;
+	}
 
 	public Collection<Feedback> getFeedbacks() {
 		return feedbacks;
@@ -102,7 +113,7 @@ public class Customer {
 	}
 
 	public Customer(int id, String name, String phone, String image, Account account, Collection<Feedback> feedbacks,
-			Collection<Cart> carts) {
+			Collection<Cart> carts, Collection<Order> order) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -111,6 +122,7 @@ public class Customer {
 		this.account = account;
 		this.feedbacks = feedbacks;
 		this.carts = carts;
+		this.order = order;
 	}
 	
 

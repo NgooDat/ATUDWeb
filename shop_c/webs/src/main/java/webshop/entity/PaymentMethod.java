@@ -14,15 +14,15 @@ public class PaymentMethod {
     private String name;
 
     @OneToMany(mappedBy = "paymentMethod")
-    private Collection<Invoice> invoices;
+    private Collection<Order> order;
 
     
-	public Collection<Invoice> getInvoices() {
-		return invoices;
+	public Collection<Order> getInvoices() {
+		return order;
 	}
 
-	public void setInvoices(Collection<Invoice> invoices) {
-		this.invoices = invoices;
+	public void setInvoices(Collection<Order> order) {
+		this.order = order;
 	}
 
 	public int getId() {
@@ -51,11 +51,11 @@ public class PaymentMethod {
 		this.name = name;
 	}
 
-	public PaymentMethod(int id, String name, Collection<Invoice> invoices) {
+	public PaymentMethod(int id, String name, Collection<Order> order) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.invoices = invoices;
+		this.order = order;
 	}
 
     

@@ -28,7 +28,7 @@ public class ProductDetail {
     private Collection<Cart> carts;
 
     @OneToMany(mappedBy = "productDetail")
-    private Collection<InvoiceDetail> invoiceDetails;
+    private Collection<OrderDetail> orderDetail;
 
 	public Collection<Cart> getCarts() {
 		return carts;
@@ -38,12 +38,12 @@ public class ProductDetail {
 		this.carts = carts;
 	}
 
-	public Collection<InvoiceDetail> getInvoiceDetails() {
-		return invoiceDetails;
+	public Collection<OrderDetail> getInvoiceDetails() {
+		return orderDetail;
 	}
 
-	public void setInvoiceDetails(Collection<InvoiceDetail> invoiceDetails) {
-		this.invoiceDetails = invoiceDetails;
+	public void setInvoiceDetails(Collection<OrderDetail> orderDetails) {
+		this.orderDetail = orderDetails;
 	}
 
 	public int getId() {
@@ -100,7 +100,7 @@ public class ProductDetail {
 	}
 
 	public ProductDetail(int id, int quantity, int price, Product product, Size size, Collection<Cart> carts,
-			Collection<InvoiceDetail> invoiceDetails) {
+			Collection<OrderDetail> orderDetails) {
 		super();
 		this.id = id;
 		this.quantity = quantity;
@@ -108,7 +108,7 @@ public class ProductDetail {
 		this.product = product;
 		this.size = size;
 		this.carts = carts;
-		this.invoiceDetails = invoiceDetails;
+		this.orderDetail = orderDetails;
 	}
 
 	
