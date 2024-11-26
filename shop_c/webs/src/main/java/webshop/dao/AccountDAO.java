@@ -1,11 +1,13 @@
 package webshop.dao;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import webshop.entity.Account;
+
 
 import java.util.Optional;
 
@@ -34,6 +36,34 @@ public class AccountDAO {
             }
         }
     }
+    
+    public Optional<Account> findAccountByUsernameAndPassword(String email, String password) {
+        Session session = null;
+       email = email.trim();
+       password = password.trim();
+        try {
+            session = sessionFactory.openSession();
+            String hql = "FROM Account WHERE TRIM(email) = :email";
+            Account account = (Account) session.createQuery(hql)
+                    .setParameter("email", email)
+                    .uniqueResult();
+            
+            //if (account != null && Bcrypt.verifyPassword(password, account.getPassword().trim())) {
+            
+            if (account != null && password.equals(account.getPassword().trim())) {
+                return Optional.of(account);
+            }else {
+            	return Optional.empty();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
 
     // Read
     public Account getAccountById(int id) {
@@ -51,6 +81,26 @@ public class AccountDAO {
         }
     }
 
+ // Read
+    public Account getAccountByEmail(String email) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            String hql = "FROM Account WHERE email = :email";  // HQL query
+            Query query = session.createQuery(hql);  // Sử dụng Hibernate 4's Query
+            query.setParameter("email", email);
+            
+            return (Account) query.uniqueResult();  // Trả về một Account hoặc null nếu không tìm thấy
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (session != null) {
+                session.close();  
+            }
+        }
+    }
+    
     // Update
     public boolean updateAccount(Account account) {
         Transaction transaction = null;

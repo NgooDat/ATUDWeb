@@ -21,12 +21,12 @@ public class OrderDetail {
     private double unitPrice;
 
     // Mối quan hệ với bảng Orders
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ordersID", insertable = false, updatable = false)
     private Order order;
 
     // Mối quan hệ với ProductDetails
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_detailsID", insertable = false, updatable = false)
     private ProductDetail productDetail;
 

@@ -2,6 +2,7 @@ package webshop.dao;
 
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -44,6 +45,8 @@ public class ProductDetailDAO {
             if (session != null) session.close();
         }
     }
+    
+
 
     // Thêm mới chi tiết sản phẩm
     public boolean addProductDetail(ProductDetail productDetail) {

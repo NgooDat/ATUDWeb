@@ -2,6 +2,9 @@ package webshop.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -70,9 +73,11 @@ public class TestController {
 	@Autowired
 	OrderDetailDAO oddd;
 	@RequestMapping("/TestController")
-	public String test( ModelMap model) {
-//		
-		//Account acc=accd.getAccountById(4);
+	public String test( ModelMap model, HttpServletRequest request) {
+		
+		
+		HttpSession session = request.getSession(false);
+		//Account acc=accd.getAccountByEmail("user1@example.com");
 //		Customer s=cusd.getCustomerById(3);
 //		s.setImage("duong 23");
 //		s.setName("hioio");
@@ -97,7 +102,7 @@ public class TestController {
 		
 //		boolean rs=oddd.deleteOrderDetail(otid);
 		//rs=brandDAO.deleteBrand(3);
-		model.addAttribute("message",list.get(0).getQuantity());
+		model.addAttribute("message", (String)session.getAttribute("user"));
 		return "test";
 	}
 }
