@@ -103,6 +103,17 @@ public class CartDAO {
             if (session != null) session.close();
         }
     }
+    
+    //Sửa status
+	/*
+	 * public boolean deleteCart(int id) { Session session = null; Transaction
+	 * transaction = null; try { session = sessionFactory.openSession(); transaction
+	 * = session.beginTransaction(); Cart cart = (Cart) session.get(Cart.class, id);
+	 * if (cart != null) { session.delete(cart); transaction.commit(); return true;
+	 * } return false; } catch (Exception e) { if (transaction != null)
+	 * transaction.rollback(); logError("Error deleting Cart with ID: " + id, e);
+	 * return false; } finally { if (session != null) session.close(); } }
+	 */
 
     // Get Carts by Customer ID
     @SuppressWarnings("unchecked")
@@ -110,7 +121,7 @@ public class CartDAO {
         Session session = null;
         try {
             session = sessionFactory.openSession();
-            String hql = "from Cart where id.customerId = :customerId";
+            String hql = "from Cart where customer.id = :customerId";
             return session.createQuery(hql)
                           .setParameter("customerId", customerId)
                           .list();

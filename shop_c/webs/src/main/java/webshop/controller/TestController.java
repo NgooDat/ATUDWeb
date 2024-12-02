@@ -91,7 +91,7 @@ public class TestController {
 //		fb.setDescription("hahah99999");
 //		fb.setId(7);
 //		
-		List<OrderDetail> list=oddd.getOrderDetailsByOrderId(1);
+		List<Cart> list=cartd.getCartsByCustomerId(2);
 //		OrderDetail ot=new OrderDetail();
 //		OrderDetailId otid=new OrderDetailId();
 //		otid.setOrdersID(2);
@@ -102,7 +102,7 @@ public class TestController {
 		
 //		boolean rs=oddd.deleteOrderDetail(otid);
 		//rs=brandDAO.deleteBrand(3);
-		model.addAttribute("message", (String)session.getAttribute("user"));
+		model.addAttribute("message", list.get(0).getTotalPrice());
 		return "test";
 	}
 }

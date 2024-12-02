@@ -82,10 +82,20 @@ public class Cart {
         super();
     }
 
-	public Cart(int iD, Integer quantity, Integer status, Integer totalPrice, Customer customer,
+    public Cart(int iD, Integer quantity, Integer status, Integer totalPrice, Customer customer,
 			ProductDetail productDetail) {
 		super();
 		ID = iD;
+		this.quantity = quantity;
+		this.status = status;
+		this.totalPrice = totalPrice;
+		this.customer = customer;
+		this.productDetail = productDetail;
+	}
+    
+    public Cart(Integer quantity, Integer status, Integer totalPrice, Customer customer,
+			ProductDetail productDetail) {
+		super();
 		this.quantity = quantity;
 		this.status = status;
 		this.totalPrice = totalPrice;
