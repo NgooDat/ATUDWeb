@@ -34,6 +34,7 @@
         <h2
           class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-custom-font u-font-ubuntu u-text u-text-default u-text-1">
           Sản phẩm mới</h2>
+          <a href="/shop_c/employee/addproduct.htm">add</a>
         <div
           class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-border-3 u-border-grey-dark-1 u-line u-line-horizontal u-line-1">
         </div>
