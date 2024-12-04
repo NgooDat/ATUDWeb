@@ -85,7 +85,7 @@
     <!-- Content -->
     <div class="content">
         <h1>Thêm sản phẩm mới</h1>
-        <form action="/shop_c/employee/addproduct" method="post" enctype="multipart/form-data">
+<form action="/shop_c/employee/addproduct.htm" method="POST" enctype="multipart/form-data">
             <label for="name">Tên sản phẩm:</label>
             <input type="text" id="name" name="name" placeholder="Nhập tên sản phẩm" required>
 

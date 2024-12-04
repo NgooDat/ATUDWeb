@@ -13,6 +13,12 @@
 			<param-value>/WEB-INF/configs/*.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		 <multipart-config>
+        <location>/tmp</location> <!-- Đường dẫn lưu file tạm -->
+        <max-file-size>2097152</max-file-size> <!-- Kích thước tối đa 2MB -->
+        <max-request-size>4194304</max-request-size> <!-- Tổng dung lượng tối đa 4MB -->
+        <file-size-threshold>512000</file-size-threshold> <!-- Lưu file tạm nếu vượt ngưỡng -->
+    </multipart-config>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>spring</servlet-name>
