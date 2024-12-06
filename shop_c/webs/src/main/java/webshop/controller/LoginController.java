@@ -32,7 +32,8 @@ public class LoginController {
     ) {
     	
     	
-
+    	 System.out.println("Username: " + username);
+    	    System.out.println("Password: " + password);
         Optional<Account> account = accountDAO.findAccountByUsernameAndPassword(username, password);
         session = request.getSession(false);
         if (account.isPresent()) {
@@ -52,8 +53,8 @@ public class LoginController {
             return "login/login"; 
         }
     }
-    
-    @RequestMapping("logout")
+ 
+     @RequestMapping("logout")
 	public String logout(HttpServletRequest request, HttpSession session) {
 	    if (session != null) {
 	        session.invalidate();

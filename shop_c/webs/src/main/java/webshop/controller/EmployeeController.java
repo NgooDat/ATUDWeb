@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.hibernate.Session;
@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import webshop.entity.Product;
 import webshop.dao.AccountDAO;
 import webshop.dao.CartDAO;
@@ -28,6 +27,7 @@ import webshop.dao.ProductDetailDAO;
 import webshop.dao.RuleDAO;
 import webshop.dao.BrandDAO;
 import webshop.dao.TypeDAO;
+import webshop.dao.SizeDAO;
 import webshop.dao.OriginDAO;
 import webshop.dao.MaterialDAO;
 import org.springframework.context.annotation.Bean;
@@ -35,9 +35,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile; // Để sử dụng MultipartFile
 
 import java.io.File;
@@ -54,6 +51,7 @@ import webshop.entity.Brand;
 import webshop.entity.Type;
 import webshop.entity.Origin;
 import webshop.entity.Material;
+import webshop.entity.Size;
 import webshop.entity.Product;
 
 
@@ -72,10 +70,12 @@ public class EmployeeController {
     @Autowired
     MaterialDAO material;
     @Autowired
+    SizeDAO size;
+    @Autowired
     ProductDAO productDAO; // Ensure ProductDAO is injecte
 
   
-
+    @ResponseBody
     @RequestMapping("employee/main")
     public String employeePage() {
         return "employee/main"; // Trả về view "employee.jsp"
@@ -86,14 +86,17 @@ public class EmployeeController {
 
     @RequestMapping("employee/addproduct")
     public String home(ModelMap model) {
+    	System.out.println("Thêm sản phẩm thành công: với GET ");
         // Lấy các thông tin về loại sản phẩm, xuất xứ, thương hiệu và chất liệu
         List<Type> dsTypes = type.getAllTypes(); // Lấy tất cả loại sản phẩm
+        List<Size> dsSizes = size.getAllSizes(); // Lấy tất cả kích thước
         List<Origin> dsOrigins = origin.getAllOrigins(); // Lấy tất cả xuất xứ
         List<Brand> dsBrands = brand.getAllBrands(); // Lấy tất cả thương hiệu
         List<Material> dsMaterials = material.getAllMaterials(); // Lấy tất cả chất liệu
 
         // Thêm các thông tin vào model
         model.addAttribute("types", dsTypes);
+        model.addAttribute("sizes", dsSizes);
         model.addAttribute("origins", dsOrigins);
         model.addAttribute("brands", dsBrands);
         model.addAttribute("materials", dsMaterials);
@@ -106,77 +109,61 @@ public class EmployeeController {
         // Trả về trang addproduct nếu không có lỗi
         return "employee/addproduct";
     }
+    
+    @RequestMapping(value = "employee/addproduct", method = RequestMethod.POST)
+    public String addProduct(HttpServletRequest request, Model model) {
+        System.out.println("Thêm sản phẩm thành công: với POST ");
 
-    @RequestMapping("/employee/add-product")
-    public String addProduct(
-            @RequestParam("name") String name,
-            @RequestParam("image") MultipartFile image,
-            @RequestParam("description") String description,
-            @RequestParam("typesID") int typesID,
-            @RequestParam("originsID") int originsID,
-            @RequestParam("brandsID") int brandsID,
-            @RequestParam("materialsID") int materialsID,
-            HttpServletRequest request,
-            HttpSession session,
-            Model model
-    ) {
-       
+        // Lấy các thông tin từ form
+        String name = request.getParameter("name");
+        String description = request.getParameter("description");
+        String image = request.getParameter("image"); // Lấy tên file từ form
+        String typesID = request.getParameter("typesID");
+        String originsID = request.getParameter("originsID");
+        String brandsID = request.getParameter("brandsID");
+        String materialsID = request.getParameter("materialsID");
+        
+        // Debug: Kiểm tra giá trị lấy được
+        System.out.println("Tên sản phẩm: " + name);
+        System.out.println("Mô tả sản phẩm: " + description);
+        System.out.println("Tên file ảnh: " + image);
+        System.out.println("Loại sản phẩm (ID): " + typesID);
+        System.out.println("Xuất xứ (ID): " + originsID);
+        System.out.println("Thương hiệu (ID): " + brandsID);
+        System.out.println("Chất liệu (ID): " + materialsID);
 
-        try {
-            // In thông tin nhận được từ form
-            System.out.println("Tên sản phẩm: " + name);
-            System.out.println("Ảnh sản phẩm: " + (image.isEmpty() ? "Chưa chọn ảnh" : image.getOriginalFilename()));
-            System.out.println("Mô tả sản phẩm: " + description);
-            System.out.println("ID Loại sản phẩm: " + typesID);
-            System.out.println("ID Xuất xứ: " + originsID);
-            System.out.println("ID Thương hiệu: " + brandsID);
-            System.out.println("ID Chất liệu: " + materialsID);
+        // Tạo đối tượng từ ID
+        Type type = new Type();
+        type.setId(Integer.parseInt(typesID));
+        
+      
+        Origin origin = new Origin();
+        origin.setId(Integer.parseInt(originsID));
 
-            // Kiểm tra và tạo tên tệp duy nhất cho ảnh
-            String originalFileName = image.getOriginalFilename();
-            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            String newFileName = System.currentTimeMillis() + fileExtension;
+        Brand brand = new Brand();
+        brand.setId(Integer.parseInt(brandsID));
 
-            // Đường dẫn đến thư mục lưu trữ ảnh
-            String uploadDir = "images/products";
-            File uploadDirectory = new File(uploadDir);
-            if (!uploadDirectory.exists()) {
-                uploadDirectory.mkdirs(); // Tạo thư mục nếu chưa tồn tại
-            }
+        Material material = new Material();
+        material.setId(Integer.parseInt(materialsID));
 
-            // Tạo tệp và lưu ảnh vào thư mục
-            File destFile = new File(uploadDir + "/" + newFileName);
-            image.transferTo(destFile); // Lưu ảnh vào thư mục
+        // Lưu thông tin vào cơ sở dữ liệu
+        Product product = new Product();
+        product.setName(name);
+        product.setDescription(description);
+        product.setImage(image); // Chỉ lưu tên file vào cơ sở dữ liệu
+        product.setType(type); // Gán đối tượng Type vào sản phẩm
+        product.setOrigin(origin); // Gán đối tượng Origin vào sản phẩm
+        product.setBrand(brand); // Gán đối tượng Brand vào sản phẩm
+        product.setMaterial(material); // Gán đối tượng Material vào sản phẩm
+        boolean isSuccess = productDAO.addProduct(product);
 
-            // Lấy các đối tượng Type, Origin, Brand, Material từ DB
-            Type productType = type.getTypeById(typesID);
-            Origin productOrigin = origin.getOriginById(originsID);
-            Brand productBrand = brand.getBrandById(brandsID);
-            Material productMaterial = material.getMaterialById(materialsID);
-
-            // Tạo đối tượng Product và thiết lập các thuộc tính
-            Product product = new Product();
-            product.setName(name);
-            product.setDescription(description);
-            product.setImage(newFileName);  // Lưu tên tệp ảnh vào Product
-            product.setType(productType);
-            product.setOrigin(productOrigin);
-            product.setBrand(productBrand);
-            product.setMaterial(productMaterial);
-
-            // Lưu sản phẩm vào cơ sở dữ liệu thông qua ProductDAO
-            productDAO.addProduct(product);
-
-            // Thêm thông báo thành công vào model
-            model.addAttribute("successMessage", "Sản phẩm đã được thêm thành công!");
-
-            // Trả về trang chính của nhân viên sau khi thêm sản phẩm thành công
-            return "employee/main";  // Chuyển hướng đến trang chính của nhân viên
-        } catch (Exception e) {
-            // Xử lý lỗi và trả về thông báo lỗi
-            System.out.println("Lỗi khi thêm sản phẩm: " + e.getMessage());
-            model.addAttribute("error", "Đã có lỗi xảy ra khi thêm sản phẩm.");
-            return "employee/main";  // Trở lại trang chính của nhân viên nếu có lỗi
+        // Xử lý kết quả
+        if (isSuccess) {
+            model.addAttribute("message", "Sản phẩm đã được thêm thành công!");
+            return "employee/addproduct"; // Trả về trang hiển thị thành công
+        } else {
+            model.addAttribute("message", "Đã xảy ra lỗi khi thêm sản phẩm!");
+            return "error"; // Trả về trang hiển thị lỗi
         }
     }
 
