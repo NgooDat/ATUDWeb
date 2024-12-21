@@ -1,19 +1,26 @@
 package webshop.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import webshop.dao.AccountDAO;
 import webshop.dao.CartDAO;
@@ -30,10 +37,12 @@ import webshop.entity.Order;
 import webshop.entity.OrderDetail;
 import webshop.entity.Product;
 import webshop.entity.ProductDetail;
+import webshop.security.Authentication;
+import webshop.security.Bcrypt;
 
 @Controller
 public class UserController {
-
+	
 	@Autowired
 	AccountDAO accd;
 	@Autowired
@@ -52,7 +61,12 @@ public class UserController {
 	OrderStatusDAO osd;
 
 	@RequestMapping("home")
-	public String home(ModelMap model) {
+	public String home(ModelMap model, HttpSession ses, 
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		int auth = Authentication.redirectAuthen(request, response);
+		if(auth == 2 ) return "redirect:emhome.htm";
+		if(auth == 1 ) return "redirect:adhome.htm";
 
 		List<Product> dsProduct = product.getAllProducts();
 
@@ -68,27 +82,27 @@ public class UserController {
 			productInfoList.add(new Object[] { p.getId(), p.getName(), minPrice, p.getImage() });
 		}
 
+		model.addAttribute("message", "Sản phẩm nổi bật");
 		model.addAttribute("productInfo", productInfoList);
 
 		return "user/home";
 	}
 
-	@RequestMapping("search")
-	public String search(@RequestParam(value = "search", required = false) String search, ModelMap model) {
+	@RequestMapping(value = "search", method = RequestMethod.POST)
+	public String search(@RequestParam(value = "search",  required = false) String search, ModelMap model
+			,HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		int auth = Authentication.redirectAuthen(request, response);
+		if(auth == 2 ) return "redirect:emhome.htm";
+		if(auth == 1 ) return "redirect:adhome.htm";
+
 
 		List<Product> dsProduct = product.getAllProducts(); // Lấy tất cả sản phẩm
 		List<ProductDetail> dsDetail = prdd.getAllProductDetails(); // Lấy chi tiết sản phẩm
 
 		// Lọc sản phẩm dựa trên chuỗi search nếu được cung cấp
 		if (search != null && !search.isEmpty()) {
-			dsProduct = dsProduct.stream().filter(p -> p.getName().toLowerCase().contains(search.toLowerCase())) // Lọc
-																													// sản
-																													// phẩm
-																													// có
-																													// tên
-																													// chứa
-																													// chuỗi
-																													// search
+			dsProduct = dsProduct.stream().filter(p -> p.getName().toLowerCase().contains(search.toLowerCase()))
 					.collect(Collectors.toList());
 		}
 
@@ -104,153 +118,24 @@ public class UserController {
 		}
 
 		// Gắn danh sách vào Model
+		model.addAttribute("message", "Sản phẩm cần tìm");
 		model.addAttribute("productInfo", productInfoList);
 
 		return "user/home";
 	}
 
-	@RequestMapping("cart")
-	public String cart(HttpSession ses, ModelMap model) {
-
-		String email = (String) ses.getAttribute("user");
-
-		Account acc = accd.getAccountByEmail(email);
-
-		Customer cus = cusd.getCustomerById(acc.getId());
-
-		List<Product> dsProduct = product.getAllProducts();
-
-		List<ProductDetail> dsDetail = prdd.getAllProductDetails();
-
-		List<Cart> dsCart = cartd.getAllCarts();
-
-		int givenCustomerId = cus.getId(); // Thay bằng ID của khách hàng mà bạn muốn lọc
-
-		List<Map<String, Object>> cartDetails = new ArrayList<>();
-
-		for (Cart cart : dsCart) {
-			if (cart.getStatus() != 1) {
-				// Kiểm tra điều kiện customersID
-				if (cart.getCustomer().getId() == givenCustomerId) {
-					// Tìm ProductDetail tương ứng với product_detailsID trong Cart
-					ProductDetail productDetail = dsDetail.stream()
-							.filter(detail -> detail.getId() == cart.getProductDetail().getId()) // so sánh ID
-							.findFirst().orElse(null);
-
-					if (productDetail != null) {
-						// Tìm Product tương ứng với productID trong ProductDetail
-						Product product = dsProduct.stream()
-								.filter(p -> p.getId() == productDetail.getProduct().getId()).findFirst().orElse(null);
-
-						if (product != null) {
-							// Tính tổng tiền
-							int quantity = cart.getQuantity();
-							int price = productDetail.getPrice();
-							int total = price * quantity;
-
-							// Lưu thông tin vào danh sách
-							Map<String, Object> detail = new HashMap<>();
-							detail.put("cartid", cart.getID());
-							detail.put("status", cart.getStatus());
-							detail.put("image", product.getImage());
-							detail.put("name", product.getName());
-							detail.put("size", productDetail.getSize().getId());
-							detail.put("price", price);
-							detail.put("quantity", quantity);
-							detail.put("maxQuantity", productDetail.getQuantity());
-							detail.put("total", total);
-
-							cartDetails.add(detail);
-						}
-					}
-				}
-			}
-		}
-
-		// Đưa cartDetails vào model để hiển thị trên giao diện
-		model.addAttribute("cartDetails", cartDetails);
-		return "user/cart";
-	}
-
-	@RequestMapping("order")
-	public String order(HttpSession ses, ModelMap model) {
-
-		if (ses.getAttribute("user") == null) {
-			return "redirect:/login.htm";
-		}
-
-		String email = (String) ses.getAttribute("user");
-
-		Account acc = accd.getAccountByEmail(email);
-
-		Customer cus = cusd.getCustomerById(acc.getId());
-
-		List<Product> dsProduct = product.getAllProducts();
-
-		List<ProductDetail> dsDetail = prdd.getAllProductDetails();
-
-		List<Order> dsOrder = ordd.getAllOrders();
-
-		List<OrderDetail> dsOrdDetail = ordetail.getAllOrderDetails();
-
-		int givenCustomerId = cus.getId(); // Thay bằng ID của khách hàng mà bạn muốn lọc
-
-		List<Map<String, Object>> orderDetails = new ArrayList<>();
-
-		for (OrderDetail orderDetail : dsOrdDetail) {
-			// Tìm Order tương ứng với ordersID trong OrderDetail
-			Order order = dsOrder.stream().filter(o -> o.getId() == orderDetail.getOrder().getId()) // So sánh ID
-					.findFirst().orElse(null);
-
-			if (order != null && order.getCustomer().getId() == givenCustomerId) { // Kiểm tra điều kiện customersID
-				// Tìm ProductDetail tương ứng với product_detailsID trong OrderDetail
-				ProductDetail productDetail = dsDetail.stream()
-						.filter(detail -> detail.getId() == orderDetail.getProductDetail().getId()) // So sánh ID
-						.findFirst().orElse(null);
-
-				if (productDetail != null) {
-					// Tìm Product tương ứng với productsID trong ProductDetail
-					Product product = dsProduct.stream().filter(p -> p.getId() == productDetail.getProduct().getId()) // So
-																														// sánh
-																														// ID
-							.findFirst().orElse(null);
-
-					if (product != null) {
-						// Tính tổng tiền
-						int quantity = orderDetail.getQuantity();
-						int price = productDetail.getPrice();
-						double shipFee = order.getShipFee();
-						double total = price * quantity + shipFee;
-
-						// Lưu thông tin vào danh sách
-						Map<String, Object> detail = new HashMap<>();
-						detail.put("image", product.getImage()); // Hình ảnh sản phẩm
-						detail.put("name", product.getName()); // Tên sản phẩm
-						detail.put("size", productDetail.getSize().getId()); // Size
-						detail.put("price", price); // Giá
-						detail.put("quantity", quantity); // Số lượng
-						detail.put("total", total); // Tổng tiền
-						detail.put("status", order.getOrderStatus().getStatusName()); // Trạng thái đơn hàng
-						detail.put("id", order.getId()); // ID của đơn hàng
-
-						orderDetails.add(detail);
-					}
-				}
-			}
-		}
-
-		// Đưa orderDetails vào model để hiển thị trên giao diện
-		model.addAttribute("orderDetails", orderDetails);
-
-		return "user/order";
-	}
-
 	@RequestMapping("login")
-	public String login(HttpSession ses) {
+	public String login(HttpSession ses, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		boolean log = Authentication.isLogin(request, response);
+	    if(log) {
+	    	return "redirect:home.htm";
+	    }
 
-		if (ses.getAttribute("user") != null) {
-			return "redirect:/home.htm";
-		}
+//		if (ses.getAttribute("user") != null) {
+//			return "redirect:/home.htm";
+//			
+//		}
 		return "login/login";
 	}
 
@@ -258,9 +143,14 @@ public class UserController {
 	public String error() {
 		return "error";
 	}
+	
+	
+	
 
-	@RequestMapping("productinfo")
-	public String productinfo(HttpServletRequest request) {
+	@RequestMapping(value="productinfo")
+	public String productinfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		
 
 		if (request.getParameter("proid") == null) {
 			return "redirect:/home.htm";
@@ -284,11 +174,14 @@ public class UserController {
 	}
 
 	@RequestMapping("personal")
-	public String personal(HttpServletRequest request, HttpSession session) {
+	public String personal(HttpServletRequest request, HttpSession session,
+			HttpServletResponse response) throws IOException {
+		
+		boolean log = Authentication.isLogin(request, response);
+	    if(!log) {
+	    	return "redirect:login.htm";
+	    }
 
-		if (session.getAttribute("user") == null) {
-			return "redirect:/login.htm";
-		}
 
 		String email = (String) session.getAttribute("user");
 
@@ -297,25 +190,174 @@ public class UserController {
 		Customer cs = null;
 
 		if (acc != null) {
-			cs = cusd.getCustomerById(acc.getId());
+			cs = cusd.getCustomerByAccountID(acc.getId());
 		}
 
 		if (cs != null) {
 			request.setAttribute("acc", acc);
 			request.setAttribute("personal", cs);
+		}else {
+			return "redirect:error.htm";
 		}
 
 		return "user/personal";
 	}
 
-	@RequestMapping("resetpass")
-	public String resetpass(HttpServletRequest request, HttpSession ses) {
-		if (ses.getAttribute("user") == null) {
-			return "redirect:/login.htm";
-		}
+	@RequestMapping(value = "/updateProfile", method = RequestMethod.POST)
+	public String updateProfile(
+	    @RequestParam("name") String name,
+	    @RequestParam("phone") String phone,
+	    @RequestParam("email") String email,
+	    @RequestParam(value = "file", required = false) MultipartFile file,
+	    HttpSession session,
+	    HttpServletRequest request,
+	    HttpServletResponse response) throws IOException
+	 {
+		
+		boolean log = Authentication.isLogin(request, response);
+	    if(!log) {
+	    	return "redirect:login.htm";
+	    }
+	    // Kiểm tra người dùng đã đăng nhập
+	    String userEmail = (String) session.getAttribute("user");
+	    if (userEmail == null) {
+	        return "redirect:/login.htm";
+	    }
 
-		// tiếp tục đổi mk gì đó
-		return "login/resetpass";
+	    // Lấy tài khoản và khách hàng từ cơ sở dữ liệu
+	    Account acc = accd.getAccountByEmail(userEmail);
+	    if (acc == null) {
+	        request.setAttribute("errorMessage", "Không tìm thấy tài khoản.");
+	        return "user/personal";
+	    }
+
+	    Customer customer = cusd.getCustomerById(acc.getId());
+	    if (customer == null) {
+	        request.setAttribute("errorMessage", "Không tìm thấy thông tin khách hàng.");
+	        return "user/personal";
+	    }
+
+	    // Cập nhật thông tin
+	    customer.setName(name);
+	    customer.setPhone(phone);
+	    acc.setEmail(email);
+
+	    // Xử lý upload ảnh (nếu có)
+	    if (file != null && !file.isEmpty()) {
+	        try {
+	        	String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+	            String fileName = timestamp + file.getOriginalFilename();
+	            String uploadDir = request.getServletContext().getRealPath("/images/avatar/");
+	            File uploadFile = new File(uploadDir, fileName);
+	            file.transferTo(uploadFile);
+
+	            // Cập nhật đường dẫn ảnh đại diện
+	            customer.setImage("images/avatar/" + fileName);
+	        } catch (Exception e) {
+	            request.setAttribute("errorMessage", "Lỗi khi upload ảnh: " + e.getMessage());
+	            return "user/personal";
+	        }
+	    }
+
+	    // Lưu vào cơ sở dữ liệu
+	    cusd.updateCustomer(customer);
+	    accd.updateAccount(acc);
+
+	    // Gửi thông báo thành công
+	    request.setAttribute("successMessage", "Cập nhật thông tin thành công!");
+	    return "redirect:/personal";
+	}
+	
+	@RequestMapping(value = "resetpass", method = RequestMethod.POST)
+	public String changePassword(
+	        @RequestParam("currentPassword") String currentPassword,
+	        @RequestParam("newPassword") String newPassword,
+	        @RequestParam("confirmPassword") String confirmPassword,
+	        HttpSession session,
+	        ModelMap model,
+	        HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		boolean log = Authentication.isLogin(request, response);
+	    if(!log) {
+	    	return "redirect:login.htm";
+	    }
+	    // Kiểm tra người dùng đã đăng nhập
+	    String userEmail = (String) session.getAttribute("user");
+
+
+	    // Lấy thông tin tài khoản từ cơ sở dữ liệu
+	    Account acc = accd.getAccountByEmail(userEmail);
+	    if (acc == null) {
+	        model.addAttribute("errorMessage", "Tài khoản không tồn tại.");
+	        return "login/resetpass";
+	    }
+	    
+	    boolean flag = false;
+
+	    // Kiểm tra mật khẩu cũ
+	    if (!Bcrypt.matches(currentPassword, acc.getPassword())) { // Nếu cần, thêm mã hóa bcrypt để so sánh
+	        
+	        flag = true;
+	        if(session.getAttribute("count")==null) {
+				session.setAttribute("count", 1);
+			}else {
+				int count = (int)session.getAttribute("count");
+				if(count == 2) {
+					session.invalidate();
+					return "redirect:login.htm";
+				}
+				count = count + 1;
+				session.setAttribute("count", count);
+			}
+	        model.addAttribute("errorMessage", "Mật khẩu cũ không đúng.");
+	        
+	    }
+
+	    // Kiểm tra mật khẩu mới và xác nhận mật khẩu
+	    else if (!newPassword.equals(confirmPassword)) {
+	        model.addAttribute("errorMessage", "Mật khẩu xác nhận không khớp.");
+	        flag = true;
+	    }
+	    
+	    //Kiểm tra mk mạnh
+	    else if(!Bcrypt.isStrongPassword(confirmPassword)) {
+	    	model.addAttribute("errorMessage", "Mật khẩu phải trên 8 ký tự, có chữ hoa chữ thường, số và ký tự đặc biệt!");
+	    	flag = true;
+	    }
+	    
+	    if(flag) {
+	    	model.addAttribute("pass1", currentPassword);
+	        model.addAttribute("pass2", newPassword);
+	        model.addAttribute("pass3", confirmPassword);
+	        return "login/resetpass";
+	    }
+
+	    // Cập nhật mật khẩu mới
+	    acc.setPassword(Bcrypt.encodePassword(confirmPassword)); // Nếu cần, mã hóa mật khẩu bằng bcrypt trước khi lưu
+	    boolean isUpdated = accd.updateAccount(acc);
+
+	    if (isUpdated) {
+	        model.addAttribute("successMessage", "Đổi mật khẩu thành công!");
+	        return "redirect:home.htm";
+	    } else {
+	        model.addAttribute("errorMessage", "Có lỗi xảy ra khi đổi mật khẩu.");
+	    }
+
+	    // Quay lại trang đổi mật khẩu với thông báo
+	    return "login/resetpass";
+	}
+
+
+	@RequestMapping(value = "resetpass", method = RequestMethod.GET)
+	public String showResetPasswordForm(HttpSession session, HttpServletRequest request, 
+			HttpServletResponse response) throws IOException {
+		boolean log = Authentication.isLogin(request, response);
+	    if(!log) {
+	    	return "redirect:login.htm";
+	    }
+	    return "login/resetpass";
 	}
 
 }
+
+

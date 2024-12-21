@@ -112,6 +112,11 @@ public class Customer {
 		super();
 	}
 
+	public Customer(int id) {
+		super();
+		this.id = id;
+	}
+	
 	public Customer(int id, String name, String phone, String image, Account account, Collection<Feedback> feedbacks,
 			Collection<Cart> carts, Collection<Order> order) {
 		super();

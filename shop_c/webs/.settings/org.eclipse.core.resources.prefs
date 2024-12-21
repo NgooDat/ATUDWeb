@@ -1,2 +1,3 @@
 eclipse.preferences.version=1
-encoding//src/main/webapp/WEB-INF/views/employee/main.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/admin/staffManage.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/user/order/index.jsp=UTF-8

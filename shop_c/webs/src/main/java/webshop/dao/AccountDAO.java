@@ -7,8 +7,11 @@ import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import webshop.entity.Account;
+import webshop.entity.Rule;
+import webshop.security.Bcrypt;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -50,7 +53,7 @@ public class AccountDAO {
             
             //if (account != null && Bcrypt.verifyPassword(password, account.getPassword().trim())) {
             
-            if (account != null && password.equals(account.getPassword().trim())) {
+            if (account != null && Bcrypt.matches(password.trim(), account.getPassword().trim())) {
                 return Optional.of(account);
             }else {
             	return Optional.empty();
@@ -100,6 +103,27 @@ public class AccountDAO {
             }
         }
     }
+    
+    //@@CH 
+    public List<Account> getAccountByRule(Rule rule) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            String hql = "FROM Account WHERE rule = :rule";
+            Query query = session.createQuery(hql);  
+            query.setParameter("rule", rule);  
+            
+            return query.list();  
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();  
+        } finally {
+            if (session != null) {
+                session.close();  
+            }
+        }
+    }
+
     
     // Update
     public boolean updateAccount(Account account) {

@@ -34,6 +34,22 @@ public class CustomerDAO {
             if (session != null) session.close();
         }
     }
+ // Get customers by account ID
+    public Customer getCustomerByAccountID(int accountId) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            String hql = "FROM Customer WHERE account.id = :accountId";
+            return (Customer) session.createQuery(hql)
+                    .setParameter("accountId", accountId)
+                    .uniqueResult();
+        } catch (Exception e) {
+            logError("Error getting customer by Account ID: " + accountId, e);
+            return null;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
 
     // Read customer by ID
     public Customer getCustomerById(int id) {

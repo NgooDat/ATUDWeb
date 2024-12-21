@@ -20,7 +20,7 @@
                 </a>
                 <nav class="u-dropdown-icon u-menu u-menu-one-level u-menu-open-right u-offcanvas u-menu-1"
                      data-responsive-from="MD" data-submenu-level="on-click">
-                    <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0px;">
+                     <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0px;">
                         <a class="u-button-style u-custom-left-right-menu-spacing u-custom-padding-bottom u-custom-top-bottom-menu-spacing u-hamburger-link u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base u-hamburger-link-1"
                            href="#">
                             <svg class="u-svg-link" viewBox="0 0 24 24">
@@ -104,12 +104,12 @@
                               c-0.8,0-1.5,0.7-1.5,1.5s0.7,1.5,1.5,1.5s1.5-0.7,1.5-1.5S13.3,13,12.5,13L12.5,13z M4.5,13C3.7,13,3,13.7,3,14.5S3.7,16,4.5,16
                               S6,15.3,6,14.5S5.3,13,4.5,13L4.5,13z"></path>
                         </svg>
-                        <span class="u-icon-circle u-palette-1-base u-shopping-cart-count"
-                              style="font-size: 0.75rem;"><!--shopping_cart_count-->0<!--/shopping_cart_count--></span>
+                        <span id="quantityCart" class="u-icon-circle u-palette-1-base u-shopping-cart-count"
+                              style="font-size: 0.75rem;">${quantityCart != null ? quantityCart : 0}</span>
                     </span>
                 </a><!--/shopping_cart-->
                 <form style="max-width: 450px; transform: translateX(15px);" action="search.htm" class="u-border-1 u-border-grey-30 u-radius u-search u-search-left u-white u-search-1"
-                      data-search-token="no-license" metho="post">
+                      data-search-token="no-license" method="post">
                     <button class="u-search-button" type="submit">
                         <span class="u-search-icon u-spacing-10 u-search-icon-1">
                             <svg class="u-svg-link" preserveAspectRatio="xMidYMin slice" viewBox="0 0 56.966 56.966">
@@ -124,7 +124,7 @@
                             </svg>
                         </span>
                     </button>
-                    <input class="u-search-input" type="search" name="search" value="" placeholder="Tìm kiếm">
+                    <input style="padding-left: 23px;" class="u-search-input" type="search" name="search" value="" placeholder="Tìm kiếm">
                 </form>
             </div>
             <style class="u-sticky-style" data-style-id="8e13">

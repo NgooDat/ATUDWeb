@@ -84,3 +84,8 @@ Quản lý thông tin về các kích cỡ sản phẩm
 
 17: payment_methods
 Lưu thông tin về các phương thức thanh toán được hỗ trợ.
+
+18: reasons
+quản lý thông tin về lý do hủy đơn hàng, được liên kết với bảng orders.
+lý do đến từ khách hàng: không hài lòng với chất lượng, sự cố tài chính, thời gian giao hàng lâu, đặt nhầm sản phẩm, thay đổi địa chỉ nhận hàng, ... lý do khác
+lý do đến từ của hàng: địa chỉ giao hàng sai, thanh toán không thành công, khách hàng không trả lời hoặc không phản hồi, lỗi hệ thống,..

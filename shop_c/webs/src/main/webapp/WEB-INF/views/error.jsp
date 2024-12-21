@@ -12,7 +12,7 @@
 
                 // Hộp thoại xác nhận tự động hiển thị khi tải trang
                 if (confirm("Lỗi kết nối hệ thống! Xin truy cập lại ít phút?")) {
-                    window.location.href = "home.htm"; // Đường dẫn đến chủ
+                    window.location.href = "logout.htm"; // Đường dẫn đến chủ
                 }
             };
         </script>

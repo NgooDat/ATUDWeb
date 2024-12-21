@@ -23,6 +23,7 @@ import webshop.dao.OriginDAO;
 import webshop.dao.PaymentMethodDAO;
 import webshop.dao.ProductDAO;
 import webshop.dao.ProductDetailDAO;
+import webshop.dao.ReasonDAO;
 import webshop.dao.SizeDAO;
 import webshop.dao.StaffDAO;
 import webshop.dao.TypeDAO;
@@ -36,6 +37,7 @@ import webshop.entity.OrderDetailId;
 import webshop.entity.OrderStatus;
 import webshop.entity.Product;
 import webshop.entity.ProductDetail;
+import webshop.entity.Reason;
 import webshop.entity.Size;
 import webshop.entity.Staff;
 
@@ -72,6 +74,8 @@ public class TestController {
 	PaymentMethodDAO pmd;
 	@Autowired
 	OrderDetailDAO oddd;
+	@Autowired
+	ReasonDAO rd;
 	@RequestMapping("/TestController")
 	public String test( ModelMap model, HttpServletRequest request) {
 		
@@ -91,7 +95,7 @@ public class TestController {
 //		fb.setDescription("hahah99999");
 //		fb.setId(7);
 //		
-		List<Cart> list=cartd.getCartsByCustomerId(2);
+//		List<Cart> list=cartd.getCartsByCustomerId(2);
 //		OrderDetail ot=new OrderDetail();
 //		OrderDetailId otid=new OrderDetailId();
 //		otid.setOrdersID(2);
@@ -101,8 +105,17 @@ public class TestController {
 //		ot.setUnitPrice(15000);
 		
 //		boolean rs=oddd.deleteOrderDetail(otid);
-		//rs=brandDAO.deleteBrand(3);
-		model.addAttribute("message", list.get(0).getTotalPrice());
+//		rs=brandDAO.deleteBrand(3);
+		
+		Reason newReason = new Reason();
+		newReason.setName("Delivery Delay2");
+		boolean rs=rd.addReason(newReason);
+//		List<Reason> reasons = rd.getAllReasons();
+//		Reason reasonToUpdate = rd.getReasonById(1);
+//		reasonToUpdate.setName("testupdate");
+//		boolean rs=rd.deleteReason(1);
+		model.addAttribute("message", rs);
+		
 		return "test";
 	}
 }

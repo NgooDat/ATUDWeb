@@ -32,16 +32,21 @@ public class UploadFile {
 				break;
 			}
 		}
+		String uploadDir = context.getRealPath("/images/avatar/");
+	    File uploadDirFile = new File(uploadDir);
+	    if (!uploadDirFile.exists()) {
+	        uploadDirFile.mkdirs();
+	    }
 
 		if (!fileTypeValid) {
 			return "Loại file không hợp lệ!";
 		}
 
-		// Lấy đường dẫn thư mục để lưu file
-		String cvPath = context.getRealPath("/files/" + file.getOriginalFilename());
-		File destFile = new File(cvPath);
-		file.transferTo(destFile);
+		 // Tạo tên file và lưu file
+	    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();  // Đảm bảo tên file duy nhất
+	    File destFile = new File(uploadDir, fileName);
+	    file.transferTo(destFile);
 
-		return "Lưu thành công!";
+	    return fileName;  // Trả về tên file đã lưu
 	}
 }

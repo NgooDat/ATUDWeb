@@ -2,6 +2,7 @@ package webshop.dao;
 
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -48,6 +49,26 @@ public class StaffDAO {
             }
         }
     }
+    
+ // Lấy Staff theo accountId
+    public Staff getStaffByAccountId(int accountId) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            String hql = "FROM Staff WHERE accountsId = :accountId";
+            Query query = session.createQuery(hql);
+            query.setParameter("accountId", accountId);
+            return (Staff) query.uniqueResult();
+        } catch (Exception e) {
+            logError("Error getting Staff by accountId: " + accountId, e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
 
     // Thêm mới Staff
     public boolean addStaff(Staff staff) {

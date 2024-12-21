@@ -37,6 +37,7 @@ public class Order {
     private String address;
     @Column(name = "description")
     private String description;
+    
 
     // Mối quan hệ với OrderStatus
     @ManyToOne
@@ -56,6 +57,20 @@ public class Order {
     // Quan hệ với OrderDetails (Một đơn hàng có nhiều chi tiết đơn hàng)
     @OneToMany(mappedBy = "order")
     private Set<OrderDetail> orderDetails;
+    
+ // Quan hệ với Reasons (Mỗi đơn hàng có một lý do)
+    @ManyToOne
+    @JoinColumn(name = "reasonID")
+    private Reason reason;
+
+    public Reason getReason() {
+        return reason;
+    }
+
+    public void setReason(Reason reason) {
+        this.reason = reason;
+    }
+
 
     // Constructors, Getters, Setters
     public Order() {}
@@ -168,11 +183,16 @@ public class Order {
         this.orderDetails = orderDetails;
     }
 
-    @Override
-    public String toString() {
-        return "Order{id=" + id + ", createTime=" + createTime + ", updateTime=" + updateTime + ", total=" + total + "}";
-    }
+    
 
+
+	@Override
+	public String toString() {
+		return "Order [id=" + id + ", createTime=" + createTime + ", updateTime=" + updateTime + ", shipFee=" + shipFee
+				+ ", productFee=" + productFee + ", total=" + total + ", paymentStatus=" + paymentStatus + ", address="
+				+ address + ", description=" + description + ", orderStatus=" + orderStatus + ", customer=" + customer
+				+ ", paymentMethod=" + paymentMethod + ", orderDetails=" + orderDetails + ", reason=" + reason + "]";
+	}
 
 	public Order(int id, Date createTime, Date updateTime, double shipFee, double productFee, double total,
 			int paymentStatus, String address, String description, OrderStatus orderStatus, Customer customer,
@@ -193,4 +213,6 @@ public class Order {
 		this.orderDetails = orderDetails;
 	}
     
+	
+	
 }

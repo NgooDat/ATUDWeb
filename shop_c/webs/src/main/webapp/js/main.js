@@ -1,6 +1,10 @@
 function addToCart() {
 
 	const selectedSize = document.querySelector('.sizebutton.selected'); // Lấy size đã chọn
+	const oldQuantityCartText = document.querySelector('#quantityCart').innerHTML.trim();
+	const oldQuantityCart = parseInt(oldQuantityCartText, 10) || 0;
+	const newQuantityCart = oldQuantityCart + 1;
+
 	if (!selectedSize) {
 		alert("Vui lòng chọn size trước khi thêm vào giỏ hàng!"); // Hiển thị cảnh báo nếu chưa chọn size
 		return;
@@ -21,6 +25,7 @@ function addToCart() {
 				alert('Sản phẩm đã có trong giỏ hàng!!!');
 			} else {
 				console.log('Thêm sản phẩm thành công: ', data);
+				document.querySelector('#quantityCart').innerHTML = newQuantityCart;
 				alert('Sản phẩm đã thêm vào giỏ hàng!!!');
 			}
 			// Bạn có thể thực hiện các thao tác khác như hiển thị thông báo
@@ -34,6 +39,7 @@ let maxQuantity = 0;  // Biến lưu trữ số lượng tối đa
 function selectSize(button, sizeId, price, quantity) {
 	// Deselect tất cả các nút trước đó
 	const buttons = document.querySelectorAll('.sizebutton');
+	const oldQuantity = document.getElementById("quantityInput").value;
 	buttons.forEach(btn => {
 		btn.classList.remove('selected');
 		btn.textContent = btn.textContent.replace(" (Đang chọn)", "");  // Xóa chữ "Đang chọn"
@@ -49,7 +55,7 @@ function selectSize(button, sizeId, price, quantity) {
 
 	// Cập nhật số lượng tối đa dựa trên size được chọn
 	maxQuantity = parseInt(quantity);  // Thiết lập maxQuantity theo số lượng của sản phẩm
-	document.getElementById("quantityInput").value = 1;  // Reset lại số lượng về 1 khi chọn size mới
+	document.getElementById("quantityInput").value = oldQuantity;  // Reset lại số lượng về 1 khi chọn size mới
 }
 
 // Hàm thay đổi số lượng (tăng hoặc giảm)
