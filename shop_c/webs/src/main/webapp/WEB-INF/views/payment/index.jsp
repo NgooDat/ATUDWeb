@@ -182,7 +182,7 @@ tr td img {
 		</div>
 		<br>
 		<div>
-			<form action="" method="">
+			<form action="" >
 				<div class="form-group">
 					<label for="name">Tên</label> <input type="text" id="name"
 						value="${customer.name}" name="name" required>

@@ -4,23 +4,64 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Repository;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
 import webshop.entity.Cart;
+import webshop.security.Authentication;
 
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Repository
 public class CartDAO {
 
+	@Autowired
+    private SessionFactory adminSessionFactory;
+    
     @Autowired
-    private SessionFactory sessionFactory;
+    private SessionFactory employeeSessionFactory;
+    
+    @Autowired
+    private SessionFactory userSessionFactory;
+
+    @Autowired
+    private SessionFactory guestSessionFactory;
+
+    // Lấy SessionFactory dựa trên vai trò
+    private SessionFactory getSessionFactoryBasedOnRole(int role) {
+        if (role == 1 ) {
+            return adminSessionFactory;
+        } else if (role == 2) {
+            return employeeSessionFactory;
+        } else if (role == 3 ) {
+            return userSessionFactory;
+        } else if(role == 0) {
+        	return guestSessionFactory;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+    }
+
+    public static HttpServletRequest getCurrentHttpRequest() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            throw new IllegalStateException("Không có request hiện tại.");
+        }
+        return (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+    }
 
  // Tạo mới Cart
     public boolean createCart(Cart cart) {
         Session session = null;
         Transaction transaction = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
             session.save(cart); // Sử dụng save để tạo mới
             transaction.commit();
@@ -39,7 +80,8 @@ public class CartDAO {
         Session session = null;
         Transaction transaction = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
             session.update(cart); // Sử dụng update để cập nhật
             transaction.commit();
@@ -57,7 +99,8 @@ public class CartDAO {
     public Cart getCartById(int id) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             return (Cart) session.get(Cart.class, id);
         } catch (Exception e) {
             logError("Error getting Cart by ID: " + id, e);
@@ -68,10 +111,12 @@ public class CartDAO {
     }
 
     // Get All Carts
-    public List<Cart> getAllCarts() {
+    @SuppressWarnings("unchecked")
+	public List<Cart> getAllCarts() {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             return session.createQuery("from Cart").list();
         } catch (Exception e) {
             logError("Error getting all Carts", e);
@@ -86,7 +131,8 @@ public class CartDAO {
         Session session = null;
         Transaction transaction = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
             Cart cart = (Cart) session.get(Cart.class, id);
             if (cart != null) {
@@ -120,7 +166,8 @@ public class CartDAO {
 	public List<Cart> getCartsByCustomerId(int customerId) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             String hql = "from Cart where customer.id = :customerId";
             return session.createQuery(hql)
                           .setParameter("customerId", customerId)

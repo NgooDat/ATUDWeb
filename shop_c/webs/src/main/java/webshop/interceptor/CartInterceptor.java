@@ -27,6 +27,7 @@ public class CartInterceptor implements HandlerInterceptor {
 	@Autowired
 	CartDAO cartDAO;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {

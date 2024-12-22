@@ -13,15 +13,15 @@ import webshop.entity.Rule;
 @Repository
 public class RuleDAO {
 
-    @Autowired
-    private SessionFactory sessionFactory;
+	@Autowired
+    private SessionFactory accountSessionFactory;
 
     // Lấy tất cả các Rule
     @SuppressWarnings("unchecked")
     public List<Rule> getAllRules() {
         Session session = null;
         try {
-            session = sessionFactory.openSession();  
+            session = accountSessionFactory.openSession();  
             return session.createQuery("FROM Rule").list();  
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,7 +37,7 @@ public class RuleDAO {
     public Rule getRuleById(int id) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();  
+            session = accountSessionFactory.openSession();  
             return (Rule) session.get(Rule.class, id); 
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,7 +54,7 @@ public class RuleDAO {
         Transaction transaction = null;
         Session session = null;
         try {
-            session = sessionFactory.openSession();  
+            session = accountSessionFactory.openSession();  
             transaction = session.beginTransaction();  
             
             session.save(rule);
@@ -77,7 +77,7 @@ public class RuleDAO {
         Transaction transaction = null;
         Session session = null;
         try {
-            session = sessionFactory.openSession();  
+            session = accountSessionFactory.openSession();  
             transaction = session.beginTransaction(); 
             
             session.update(rule); 
@@ -100,7 +100,7 @@ public class RuleDAO {
         Transaction transaction = null;
         Session session = null;
         try {
-            session = sessionFactory.openSession();  
+            session = accountSessionFactory.openSession();  
             transaction = session.beginTransaction();  
             
             Rule rule = (Rule) session.get(Rule.class, id); 

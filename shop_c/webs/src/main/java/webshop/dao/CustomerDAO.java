@@ -5,23 +5,62 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
 import webshop.entity.Customer;
+import webshop.security.Authentication;
 
 import java.util.List;
-import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Repository
 public class CustomerDAO {
 
+	@Autowired
+    private SessionFactory adminSessionFactory;
+    
     @Autowired
-    private SessionFactory sessionFactory;
+    private SessionFactory employeeSessionFactory;
+    
+    @Autowired
+    private SessionFactory userSessionFactory;
+
+    @Autowired
+    private SessionFactory guestSessionFactory;
+
+    // Lấy SessionFactory dựa trên vai trò
+    private SessionFactory getSessionFactoryBasedOnRole(int role) {
+        if (role == 1 ) {
+            return adminSessionFactory;
+        } else if (role == 2) {
+            return employeeSessionFactory;
+        } else if (role == 3 ) {
+            return userSessionFactory;
+        } else if(role == 0) {
+        	return guestSessionFactory;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+    }
+
+    public static HttpServletRequest getCurrentHttpRequest() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            throw new IllegalStateException("Không có request hiện tại.");
+        }
+        return (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+    }
 
     // Create new customer
     public boolean createCustomer(Customer customer) {
         Session session = null;
         Transaction transaction = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
             session.save(customer);
             transaction.commit();
@@ -38,7 +77,8 @@ public class CustomerDAO {
     public Customer getCustomerByAccountID(int accountId) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             String hql = "FROM Customer WHERE account.id = :accountId";
             return (Customer) session.createQuery(hql)
                     .setParameter("accountId", accountId)
@@ -55,7 +95,8 @@ public class CustomerDAO {
     public Customer getCustomerById(int id) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             return (Customer) session.get(Customer.class, id);
         } catch (Exception e) {
             logError("Error getting customer by ID: " + id, e);
@@ -70,7 +111,8 @@ public class CustomerDAO {
         Session session = null;
         Transaction transaction = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession(); 
             transaction = session.beginTransaction();
             session.update(customer);
             transaction.commit();
@@ -89,7 +131,8 @@ public class CustomerDAO {
         Session session = null;
         Transaction transaction = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
             Customer customer = (Customer) session.get(Customer.class, id);
             if (customer != null) {
@@ -108,10 +151,12 @@ public class CustomerDAO {
     }
 
     // Get all customers
-    public List<Customer> getAllCustomers() {
+    @SuppressWarnings("unchecked")
+	public List<Customer> getAllCustomers() {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             return session.createQuery("FROM Customer").list();
         } catch (Exception e) {
             logError("Error getting all customers", e);

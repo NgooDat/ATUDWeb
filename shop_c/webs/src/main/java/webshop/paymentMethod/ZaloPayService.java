@@ -3,7 +3,7 @@ package webshop.paymentMethod;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
+//import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.digest.HmacUtils;
@@ -87,7 +87,8 @@ public class ZaloPayService {
 	}
 
     // Callback method to handle ZaloPay server's response
-    public void handleCallback(Map<String, String> callbackData) {
+    @SuppressWarnings("unchecked")
+	public void handleCallback(Map<String, String> callbackData) {
         try {
             // Extract the response data
             String receivedMac = callbackData.get("mac");

@@ -1,20 +1,17 @@
 package webshop.security;
 
 import java.io.IOException;
-import java.util.List;
+
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
-import webshop.dao.AccountDAO;
-import webshop.dao.CustomerDAO;
-import webshop.entity.Account;
-import webshop.entity.Customer;
 
 @Controller
 public class Authentication {
@@ -197,6 +194,53 @@ public class Authentication {
 	    cookie.setMaxAge(-1);    // Thời gian sống của cookie khi tắt trình duyệt
 	    response.addCookie(cookie);
 	}
+	
+	
+	public static HttpServletRequest getCurrentHttpRequest() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            throw new IllegalStateException("Không có request hiện tại.");
+        }
+        return (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+    }
+	
+	
+	public static int getRole() {
+        try {
+        	HttpServletRequest request =  getCurrentHttpRequest();
+            HttpSession ses = request.getSession(false);
+
+            if (ses == null || ses.getAttribute("user") == null) {
+                return 0;
+            }
+
+            Cookie[] cookies = request.getCookies();
+            String jwtToken = null;
+
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("JWT".equals(cookie.getName())) {
+                        jwtToken = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+
+            if (jwtToken == null || !JwtUtil.validateToken(jwtToken)) {
+                return 0; // Chưa đăng nhập hoặc token không hợp lệ
+            }
+
+            String token = JwtUtil.extractJWT(jwtToken);
+            if (token.equals(Roles.getAdmin())) {
+                return 1; // Quản trị viên
+            } else if (token.equals(Roles.getEmployee())) {
+                return 2; // Nhân viên
+            }
+            return 3; // Người dùng
+        } catch (Exception e) {
+            return 0; // Trả về 0 nếu có lỗi
+        }
+    }
 	
 	
 	

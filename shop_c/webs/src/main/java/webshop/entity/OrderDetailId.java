@@ -7,7 +7,11 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class OrderDetailId implements Serializable {
-    private int product_detailsID;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int product_detailsID;
     private int ordersID;
 	
 	

@@ -3,10 +3,9 @@ package webshop.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,10 +29,9 @@ import webshop.dao.OrderStatusDAO;
 import webshop.dao.ProductDAO;
 import webshop.dao.ProductDetailDAO;
 import webshop.entity.Account;
-import webshop.entity.Cart;
+
 import webshop.entity.Customer;
-import webshop.entity.Order;
-import webshop.entity.OrderDetail;
+
 import webshop.entity.Product;
 import webshop.entity.ProductDetail;
 import webshop.security.Authentication;

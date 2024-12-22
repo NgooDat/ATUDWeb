@@ -5,36 +5,36 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
+//import java.util.Calendar;
+//import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+//import java.util.Random;
 import java.util.Set;
-import java.util.TimeZone;
+//import java.util.TimeZone;
 import java.util.UUID;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+//import javax.crypto.Mac;
+//import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.codec.digest.HmacUtils;
-import org.json.JSONObject;
+//import org.apache.commons.codec.digest.HmacUtils;
+//import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import java.net.URLEncoder;
+//import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
+//import java.net.URLEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+//import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,13 +57,13 @@ import webshop.entity.Customer;
 import webshop.entity.Order;
 import webshop.entity.OrderDetail;
 import webshop.entity.OrderDetailId;
-import webshop.entity.OrderStatus;
+//import webshop.entity.OrderStatus;
 import webshop.entity.PaymentMethod;
 import webshop.entity.Product;
 import webshop.entity.ProductDetail;
 import webshop.paymentMethod.VNPayConfig;
 import webshop.paymentMethod.VNPayService;
-import webshop.paymentMethod.ZaloPayConfig;
+//import webshop.paymentMethod.ZaloPayConfig;
 import webshop.paymentMethod.ZaloPayService;
 
 @Controller
@@ -99,16 +99,16 @@ public class PaymentController {
 
 		// Lấy danh sách idCart từ session
 		@SuppressWarnings("unchecked")
-		List<Integer> selectedCartIds = (List<Integer>) session.getAttribute("selectedCartIds");
-		if (selectedCartIds == null) {
-			return "redirect:/home.htm";
+		List<Integer> selectIdCarts= (List<Integer>) session.getAttribute("selectIdCarts");
+		if (selectIdCarts == null) {
+			return "redirect:cart.htm";
 		}
 		List<Map<String, Object>> selectProducts = new ArrayList<>();
 		List<Product> dsProduct = productDAO.getAllProducts();
 		List<ProductDetail> dsDetail = productDetailDAO.getAllProductDetails();
 		int givenCustomerId = customer.getId();
 
-		for (int idCart : selectedCartIds) {
+		for (int idCart : selectIdCarts) {
 			Cart cart = cartDAO.getCartById(idCart); // Lấy Cart từ DAO
 			if (cart.getCustomer().getId() == givenCustomerId) {
 				// Tìm ProductDetail tương ứng với product_detailsID trong Cart
@@ -222,9 +222,10 @@ public class PaymentController {
 		Account account = accountDAO.getAccountByEmail(email);
 		Customer customer = customerDAO.getCustomerByAccountID(account.getId());
 
-		List<Integer> selectedCartIds = (List<Integer>) session.getAttribute("selectedCartIds");
+		@SuppressWarnings("unchecked")
+		List<Integer> selectIdCarts= (List<Integer>) session.getAttribute("selectIdCarts");
 
-		if (selectedCartIds.isEmpty()) {
+		if (selectIdCarts.isEmpty()) {
 			model.addAttribute("message", "Đặt hàng không thành công!!!");
 			return "payment/success";
 		}
@@ -234,7 +235,7 @@ public class PaymentController {
 		Set<OrderDetail> orderDetails = new HashSet<>();
 		double totalProductFee = 0.0;
 
-		for (int idCart : selectedCartIds) {
+		for (int idCart : selectIdCarts) {
 
 			Cart cart = cartDAO.getCartById(idCart);
 			if (cart == null || cart.getProductDetail() == null) {
@@ -294,7 +295,7 @@ public class PaymentController {
 		customer.setPhone(phone);
 		customerDAO.updateCustomer(customer);
 
-		session.removeAttribute("selectedCartIds");
+		session.removeAttribute("selectIdCarts");
 
 		session.setAttribute("idOrderResult", order.getId());
 
@@ -391,8 +392,8 @@ public class PaymentController {
 
 	@Autowired
 	private VNPayService paymentService;
-	@Autowired
-	private VNPayConfig config;
+//	@Autowired
+//	private VNPayConfig config;
 
 	@RequestMapping(value = "vnpay", method = RequestMethod.GET)
 	public String vnpay(@RequestParam("phone") String phone, @RequestParam("name") String name,
@@ -414,15 +415,16 @@ public class PaymentController {
 
 				Date currentDate = new Date();
 
-				List<Integer> selectedCartIds = (List<Integer>) session.getAttribute("selectedCartIds");
+				@SuppressWarnings("unchecked")
+				List<Integer> selectIdCarts= (List<Integer>) session.getAttribute("selectIdCarts");
 
-				if (selectedCartIds.isEmpty()) {
+				if (selectIdCarts.isEmpty()) {
 					return "redirect:/home.htm";
 				}
 
 				Set<OrderDetail> orderDetails = new HashSet<>();
 
-				for (int idCart : selectedCartIds) {
+				for (int idCart : selectIdCarts) {
 
 					Cart cart = cartDAO.getCartById(idCart);
 					if (cart == null || cart.getProductDetail() == null) {
@@ -479,7 +481,7 @@ public class PaymentController {
 				customer.setPhone(phone);
 				customerDAO.updateCustomer(customer);
 
-				session.removeAttribute("selectedCartIds");
+				session.removeAttribute("selectIdCarts");
 
 				session.setAttribute("newOrderId", order.getId());
 
@@ -541,7 +543,7 @@ public class PaymentController {
 				for (OrderDetail orderDetail : orderDetails) {
 					ProductDetail productDetail = orderDetail.getProductDetail();
 
-					OrderDetailId orderDetailId = new OrderDetailId();
+//					OrderDetailId orderDetailId = new OrderDetailId();
 
 					if (productDetail.getQuantity() < orderDetail.getQuantity()) {
 						model.addAttribute("message", "Xin lỗi số lượng hàng không đủ!!!");
@@ -683,10 +685,12 @@ public class PaymentController {
 	public String vnpay(@RequestParam("vnp_Amount") double vnp_Amount,
 			@RequestParam("vnp_TransactionStatus") String vnp_TransactionStatus, HttpServletRequest request,
 			Model model, HttpSession session) {
-		Integer newOrderId = (int) session.getAttribute("newOrderId");
-		if (newOrderId == null) {
+		
+		if (session.getAttribute("newOrderId") == null) {
 			return "redirect:/home.htm";
 		}
+		Integer newOrderId = (int) session.getAttribute("newOrderId");
+		
 		// Khởi tạo Map để lưu các tham số
 		Map<String, String> fields = new HashMap<>();
 
@@ -778,15 +782,16 @@ public class PaymentController {
 
 			Date currentDate1 = new Date();
 
-			List<Integer> selectedCartIds = (List<Integer>) session.getAttribute("selectedCartIds");
+			@SuppressWarnings("unchecked")
+			List<Integer> selectIdCarts= (List<Integer>) session.getAttribute("selectIdCarts");
 
-			if (selectedCartIds.isEmpty()) {
+			if (selectIdCarts.isEmpty()) {
 				return "redirect:/home.htm";
 			}
 
 			Set<OrderDetail> orderDetails = new HashSet<>();
 
-			for (int idCart : selectedCartIds) {
+			for (int idCart : selectIdCarts) {
 
 				Cart cart = cartDAO.getCartById(idCart);
 				if (cart == null || cart.getProductDetail() == null) {
@@ -843,12 +848,13 @@ public class PaymentController {
 			customer.setPhone(phone);
 			customerDAO.updateCustomer(customer);
 
-			session.removeAttribute("selectedCartIds");
+			session.removeAttribute("selectIdCarts");
 
 			session.setAttribute("newOrderId", order.getId());
 
 			// Parse chuỗi JSON thành Map
 			ObjectMapper objectMapper = new ObjectMapper();
+			@SuppressWarnings("unchecked")
 			Map<String, Object> paymentResponse = objectMapper.readValue(response, Map.class);
 
 			// Kiểm tra nếu response trả về một URL thanh toán
@@ -916,7 +922,7 @@ public class PaymentController {
 			for (OrderDetail orderDetail : orderDetails) {
 				ProductDetail productDetail = orderDetail.getProductDetail();
 
-				OrderDetailId orderDetailId = new OrderDetailId();
+//				OrderDetailId orderDetailId = new OrderDetailId();
 
 				if (productDetail.getQuantity() < orderDetail.getQuantity()) {
 					model.addAttribute("message", "Xin lỗi số lượng hàng không đủ!!!");
@@ -958,6 +964,7 @@ public class PaymentController {
 
 			// Parse chuỗi JSON thành Map
 			ObjectMapper objectMapper = new ObjectMapper();
+			@SuppressWarnings("unchecked")
 			Map<String, Object> paymentResponse = objectMapper.readValue(response, Map.class);
 
 			// Kiểm tra nếu response trả về một URL thanh toán
@@ -1014,6 +1021,7 @@ public class PaymentController {
 
 			// Parse chuỗi JSON thành Map
 			ObjectMapper objectMapper = new ObjectMapper();
+			@SuppressWarnings("unchecked")
 			Map<String, Object> paymentResponse = objectMapper.readValue(response, Map.class);
 
 			// Kiểm tra nếu response trả về một URL thanh toán
@@ -1040,10 +1048,12 @@ public class PaymentController {
 			@RequestParam("checksum") String checksum, @RequestParam("discountamount") String discountAmount,
 			@RequestParam("pmcid") String pmcid, @RequestParam("status") String status, HttpSession session,
 			HttpServletRequest request, Model model) {
-		Integer newOrderId = (int) session.getAttribute("newOrderId");
-		if (newOrderId == null) {
+		
+		if (session.getAttribute("newOrderId") == null) {
 			return "redirect:/home.htm";
 		}
+		Integer newOrderId = (int) session.getAttribute("newOrderId");
+		
 
 		try {
 

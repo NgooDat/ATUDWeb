@@ -1,9 +1,9 @@
 package webshop.controller;
 
-import java.util.List;
+//import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+//import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,21 +25,21 @@ import webshop.dao.ProductDAO;
 import webshop.dao.ProductDetailDAO;
 import webshop.dao.ReasonDAO;
 import webshop.dao.SizeDAO;
-import webshop.dao.StaffDAO;
+//import webshop.dao.StaffDAO;
 import webshop.dao.TypeDAO;
-import webshop.entity.Account;
-import webshop.entity.Cart;
-import webshop.entity.Customer;
-import webshop.entity.Feedback;
-import webshop.entity.Order;
-import webshop.entity.OrderDetail;
-import webshop.entity.OrderDetailId;
-import webshop.entity.OrderStatus;
-import webshop.entity.Product;
-import webshop.entity.ProductDetail;
+//import webshop.entity.Account;
+//import webshop.entity.Cart;
+//import webshop.entity.Customer;
+//import webshop.entity.Feedback;
+//import webshop.entity.Order;
+//import webshop.entity.OrderDetail;
+//import webshop.entity.OrderDetailId;
+//import webshop.entity.OrderStatus;
+//import webshop.entity.Product;
+//import webshop.entity.ProductDetail;
 import webshop.entity.Reason;
-import webshop.entity.Size;
-import webshop.entity.Staff;
+//import webshop.entity.Size;
+//import webshop.entity.Staff;
 
 @Controller
 public class TestController {
@@ -80,7 +80,7 @@ public class TestController {
 	public String test( ModelMap model, HttpServletRequest request) {
 		
 		
-		HttpSession session = request.getSession(false);
+//		HttpSession session = request.getSession(false);
 		//Account acc=accd.getAccountByEmail("user1@example.com");
 //		Customer s=cusd.getCustomerById(3);
 //		s.setImage("duong 23");

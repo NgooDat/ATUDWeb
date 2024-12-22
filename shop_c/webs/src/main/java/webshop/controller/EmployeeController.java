@@ -2,10 +2,10 @@ package webshop.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputFilter.Status;
+//import java.io.ObjectInputFilter.Status;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+//import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -18,8 +18,8 @@ import org.springframework.ui.Model;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+//import org.hibernate.Session;
+//import org.hibernate.Transaction;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,33 +28,34 @@ import org.springframework.ui.ModelMap;
 
 import webshop.entity.Product;
 import webshop.entity.ProductDetail;
+
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import webshop.dao.AccountDAO;
+import webshop.dao.BrandDAO;
 import webshop.dao.CartDAO;
 import webshop.dao.CustomerDAO;
+import webshop.dao.MaterialDAO;
 import webshop.dao.OrderDAO;
 import webshop.dao.OrderDetailDAO;
 import webshop.dao.OrderStatusDAO;
+import webshop.dao.OriginDAO;
+import webshop.dao.PaymentMethodDAO;
 import webshop.dao.ProductDAO;
 import webshop.dao.ProductDetailDAO;
 import webshop.dao.ReasonDAO;
-import webshop.dao.RuleDAO;
-import webshop.dao.BrandDAO;
-import webshop.dao.TypeDAO;
+//import webshop.dao.RuleDAO;
 import webshop.dao.SizeDAO;
 import webshop.dao.StaffDAO;
-import webshop.dao.OriginDAO;
-import webshop.dao.PaymentMethodDAO;
-import webshop.dao.MaterialDAO;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import webshop.dao.TypeDAO;
 import webshop.entity.Account;
 import webshop.entity.Brand;
 import webshop.entity.Cart;
 import webshop.entity.Customer;
 import webshop.entity.Type;
 import webshop.security.Authentication;
-import webshop.security.JwtUtil;
-import webshop.security.Roles;
+//import webshop.security.JwtUtil;
+//import webshop.security.Roles;
 import webshop.entity.Origin;
 import webshop.entity.Material;
 import webshop.entity.Order;
@@ -62,7 +63,7 @@ import webshop.entity.OrderDetail;
 import webshop.entity.OrderStatus;
 import webshop.entity.Size;
 import webshop.entity.Staff;
-import webshop.entity.Product;
+//import webshop.entity.Product;
 
 @Controller
 public class EmployeeController {
@@ -78,7 +79,7 @@ public class EmployeeController {
 	@Autowired
 	SizeDAO size;
 	@Autowired
-	ProductDAO productDAO; // Ensure ProductDAO is injecte
+	ProductDAO productDAO;
 	@Autowired
 	ProductDetailDAO prdd;
 	@Autowired
@@ -105,22 +106,24 @@ public class EmployeeController {
 	StaffDAO staffDAO;
 
 	@RequestMapping("emhome")
-	public String homee(ModelMap model, HttpSession ses, 
-			HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String homee(ModelMap model, HttpSession ses, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 
 		return "employee/home";
 	}
 
 	@RequestMapping("emproduct")
-	public String emproduct(ModelMap model, HttpServletRequest request, 
-			HttpServletResponse response) throws IOException {
+	public String emproduct(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 
 		List<Product> dsProduct = product.getAllProducts();
 
@@ -143,13 +146,14 @@ public class EmployeeController {
 	}
 
 	@RequestMapping("empersonal")
-	public String personal(HttpServletRequest request, HttpSession session, 
-			HttpServletResponse response) throws IOException {
+	public String personal(HttpServletRequest request, HttpSession session, HttpServletResponse response)
+			throws IOException {
 
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
-		
+
+		if (auth != 2)
+			return "redirect:home.htm";
+
 		String email = (String) session.getAttribute("user");
 
 		Account acc = accd.getAccountByEmail(email);
@@ -163,70 +167,66 @@ public class EmployeeController {
 		if (cs != null) {
 			request.setAttribute("acc", acc);
 			request.setAttribute("personal", cs);
-		}else {
+		} else {
 			return "redirect:error.htm";
 		}
 
 		return "employee/personal";
 	}
-	
+
 	@RequestMapping(value = "updateinfo", method = RequestMethod.POST)
-    public String abcdef(
-            @RequestParam("id") int staffId,
-            @RequestParam("name") String name,
-            @RequestParam("phone") String phone,
-            @RequestParam("address") String address,
-            ModelMap model,
-            HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+	public String abcdef(@RequestParam("id") int staffId, @RequestParam("name") String name,
+			@RequestParam("phone") String phone, @RequestParam("address") String address, ModelMap model,
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-    	int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+		int auth = Authentication.redirectAuthen(request, response);
 
-        // Lấy thông tin Staff từ database
-        Staff staff = staffDAO.getStaffById(staffId);
+		if (auth != 2)
+			return "redirect:home.htm";
 
-        if (staff == null) {
-            model.addAttribute("error", "Không tìm thấy nhân viên để cập nhật.");
-            return "redirect:account.htm";
-        }
+		// Lấy thông tin Staff từ database
+		Staff staff = staffDAO.getStaffById(staffId);
 
-        // Cập nhật thông tin nhân viên
-        staff.setName(name);
-        staff.setPhone(phone);
-        staff.setAddress(address);
+		if (staff == null) {
+			model.addAttribute("error", "Không tìm thấy nhân viên để cập nhật.");
+			return "redirect:account.htm";
+		}
 
-        // Cập nhật trạng thái tài khoản
-        Account account = staff.getAccount();
-        if (account != null) {
-            boolean accountUpdated = accd.updateAccount(account);
-            if (!accountUpdated) {
-                model.addAttribute("message", "Cập nhật trạng thái tài khoản thất bại.");
-            }
-        }
+		// Cập nhật thông tin nhân viên
+		staff.setName(name);
+		staff.setPhone(phone);
+		staff.setAddress(address);
 
-        boolean updated = staffDAO.updateStaff(staff);
+		// Cập nhật trạng thái tài khoản
+		Account account = staff.getAccount();
+		if (account != null) {
+			boolean accountUpdated = accd.updateAccount(account);
+			if (!accountUpdated) {
+				model.addAttribute("message", "Cập nhật trạng thái tài khoản thất bại.");
+			}
+		}
 
-        if (updated) {
-            model.addAttribute("message", "Cập nhật thông tin thành công!");
-        } else {
-            model.addAttribute("message", "Cập nhật thông tin thất bại!");
-        }
-        
-        model.addAttribute("acc", account);
+		boolean updated = staffDAO.updateStaff(staff);
 
+		if (updated) {
+			model.addAttribute("message", "Cập nhật thông tin thành công!");
+		} else {
+			model.addAttribute("message", "Cập nhật thông tin thất bại!");
+		}
 
-        model.addAttribute("staff", staff);
-        return "employee/personal";
-    }
+		model.addAttribute("acc", account);
+
+		model.addAttribute("staff", staff);
+		return "employee/personal";
+	}
 
 	@RequestMapping("emsearch")
 	public String search(@RequestParam(value = "emsearch", required = false) String search, ModelMap model,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 
 		List<Product> dsProduct = product.getAllProducts(); // Lấy tất cả sản phẩm
 		List<ProductDetail> dsDetail = prdd.getAllProductDetails(); // Lấy chi tiết sản phẩm
@@ -258,8 +258,9 @@ public class EmployeeController {
 	@RequestMapping("emaddproduct")
 	public String home(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 		System.out.println("Thêm sản phẩm thành công: với GET ");
 		// Lấy các thông tin về loại sản phẩm, xuất xứ, thương hiệu và chất liệu
 		List<Type> dsTypes = type.getAllTypes(); // Lấy tất cả loại sản phẩm
@@ -282,91 +283,93 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = "emaddproduct", method = RequestMethod.POST)
-	public String addProduct(HttpServletRequest request, Model model, 
-			@RequestParam(value = "file", required = false) MultipartFile file
-			, HttpServletResponse response) throws IOException{
-		
+	public String addProduct(HttpServletRequest request, Model model,
+			@RequestParam(value = "file", required = false) MultipartFile file, HttpServletResponse response)
+			throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 
 		// Lấy các thông tin từ form
-				String name = request.getParameter("name");
-				String description = request.getParameter("description");
+		String name = request.getParameter("name");
+		String description = request.getParameter("description");
 
-				String image = request.getParameter("image"); // Lấy tên file từ form
-				String typesID = request.getParameter("typesID");
-				String originsID = request.getParameter("originsID");
-				String brandsID = request.getParameter("brandsID");
-				String materialsID = request.getParameter("materialsID");
+		String image = request.getParameter("image"); // Lấy tên file từ form
+		String typesID = request.getParameter("typesID");
+		String originsID = request.getParameter("originsID");
+		String brandsID = request.getParameter("brandsID");
+		String materialsID = request.getParameter("materialsID");
 
-				// Debug: Kiểm tra giá trị lấy được
-				System.out.println("Tên sản phẩm: " + name);
-				System.out.println("Mô tả sản phẩm: " + description);
-				System.out.println("Tên file ảnh: " + image);
-				System.out.println("Loại sản phẩm (ID): " + typesID);
-				System.out.println("Xuất xứ (ID): " + originsID);
-				System.out.println("Thương hiệu (ID): " + brandsID);
-				System.out.println("Chất liệu (ID): " + materialsID);
+		// Debug: Kiểm tra giá trị lấy được
+		System.out.println("Tên sản phẩm: " + name);
+		System.out.println("Mô tả sản phẩm: " + description);
+		System.out.println("Tên file ảnh: " + image);
+		System.out.println("Loại sản phẩm (ID): " + typesID);
+		System.out.println("Xuất xứ (ID): " + originsID);
+		System.out.println("Thương hiệu (ID): " + brandsID);
+		System.out.println("Chất liệu (ID): " + materialsID);
 
-				// Tạo đối tượng từ ID
-				Type type = new Type();
-				type.setId(Integer.parseInt(typesID));
+		// Tạo đối tượng từ ID
+		Type type = new Type();
+		type.setId(Integer.parseInt(typesID));
 
-				Origin origin = new Origin();
-				origin.setId(Integer.parseInt(originsID));
+		Origin origin = new Origin();
+		origin.setId(Integer.parseInt(originsID));
 
-				Brand brand = new Brand();
-				brand.setId(Integer.parseInt(brandsID));
+		Brand brand = new Brand();
+		brand.setId(Integer.parseInt(brandsID));
 
-				Material material = new Material();
-				material.setId(Integer.parseInt(materialsID));
+		Material material = new Material();
+		material.setId(Integer.parseInt(materialsID));
 
-				String fileName = "";
+		String fileName = "";
 
-				if (file != null && !file.isEmpty()) {
-					try {
-						String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
-						fileName = timestamp  + file.getOriginalFilename();
-						String uploadDir = request.getServletContext().getRealPath("/images/products/");
-						File uploadFile = new File(uploadDir, fileName);
-						file.transferTo(uploadFile);
+		if (file != null && !file.isEmpty()) {
+			try {
+				String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+				fileName = timestamp + file.getOriginalFilename();
+				String uploadDir = request.getServletContext().getRealPath("/images/products/");
+				File uploadFile = new File(uploadDir, fileName);
+				file.transferTo(uploadFile);
 
-					} catch (Exception e) {
-						request.setAttribute("errorMessage", "Lỗi khi upload ảnh: " + e.getMessage());
-						return "user/personal";
-					}
-				}
+			} catch (Exception e) {
+				request.setAttribute("errorMessage", "Lỗi khi upload ảnh: " + e.getMessage());
+				return "user/personal";
+			}
+		}
 
-				// Lưu thông tin vào cơ sở dữ liệu
-				Product product = new Product();
-				product.setName(name);
-				product.setDescription(description);
-				product.setImage(fileName); // Chỉ lưu tên file vào cơ sở dữ liệu
-				product.setType(type); // Gán đối tượng Type vào sản phẩm
-				product.setOrigin(origin); // Gán đối tượng Origin vào sản phẩm
-				product.setBrand(brand); // Gán đối tượng Brand vào sản phẩm
-				product.setMaterial(material); // Gán đối tượng Material vào sản phẩm
-				boolean isSuccess = productDAO.addProduct(product);
+		// Lưu thông tin vào cơ sở dữ liệu
+		Product product = new Product();
+		product.setName(name);
+		product.setDescription(description);
+		product.setImage(fileName); // Chỉ lưu tên file vào cơ sở dữ liệu
+		product.setType(type); // Gán đối tượng Type vào sản phẩm
+		product.setOrigin(origin); // Gán đối tượng Origin vào sản phẩm
+		product.setBrand(brand); // Gán đối tượng Brand vào sản phẩm
+		product.setMaterial(material); // Gán đối tượng Material vào sản phẩm
+		boolean isSuccess = productDAO.addProduct(product);
 
-				// Xử lý upload ảnh (nếu có)
+		// Xử lý upload ảnh (nếu có)
 
-				// Xử lý kết quả
-				if (isSuccess) {
-					model.addAttribute("message", "Sản phẩm đã được thêm thành công!");
-					return "redirect:emproduct.htm"; // Trả về trang hiển thị thành công
-				} else {
-					model.addAttribute("message", "Đã xảy ra lỗi khi thêm sản phẩm!");
-					return "error"; // Trả về trang hiển thị lỗi
-				}
+		// Xử lý kết quả
+		if (isSuccess) {
+			model.addAttribute("message", "Sản phẩm đã được thêm thành công!");
+			return "redirect:emproduct.htm"; // Trả về trang hiển thị thành công
+		} else {
+			model.addAttribute("message", "Đã xảy ra lỗi khi thêm sản phẩm!");
+			return "error"; // Trả về trang hiển thị lỗi
+		}
 	}
 
 	@RequestMapping("updateprod")
-	public String update(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+	public String update(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 		// Lấy các thông tin về loại sản phẩm, xuất xứ, thương hiệu và chất liệu
 		List<Type> dsTypes = type.getAllTypes(); // Lấy tất cả loại sản phẩm
 		List<Size> dsSizes = size.getAllSizes(); // Lấy tất cả kích thước
@@ -394,11 +397,13 @@ public class EmployeeController {
 
 	@RequestMapping(value = "updateprod", method = RequestMethod.POST)
 	public String updateProduct(HttpServletRequest request, Model model,
-			@RequestParam(value = "file", required = false) MultipartFile file, HttpServletResponse response) throws IOException{
-		
+			@RequestParam(value = "file", required = false) MultipartFile file, HttpServletResponse response)
+			throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 
 		// Lấy các thông tin từ form
 		String name = request.getParameter("name");
@@ -445,12 +450,11 @@ public class EmployeeController {
 		// Kiểm tra và xử lý file ảnh
 		if (file != null && !file.isEmpty()) {
 			try {
-			  String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+				String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
 				String fileName = timestamp + file.getOriginalFilename();
 				String uploadDir = request.getServletContext().getRealPath("/images/products/");
 				File uploadFile = new File(uploadDir, fileName);
 				file.transferTo(uploadFile);
-				
 
 				// Cập nhật tên file ảnh nếu upload thành công
 				product.setImage(fileName);
@@ -464,17 +468,18 @@ public class EmployeeController {
 		}
 
 		// Cập nhật sản phẩm vào cơ sở dữ liệu
-		boolean isSuccess = productDAO.updateProduct(product);
+		productDAO.updateProduct(product);
 
 		return "redirect:emproductinfo.htm?proid=" + sid;
 	}
 
 	@RequestMapping("emproductinfo")
-	public String productinfo(HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+	public String productinfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 
 		if (request.getParameter("proid") == null) {
 			return "redirect:/home.htm";
@@ -499,11 +504,13 @@ public class EmployeeController {
 
 	// theem chi tiet san pham
 	@RequestMapping("emaddproductdetail")
-	public String home_addPrD(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+	public String home_addPrD(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 		// Lấy danh sách sản phẩm
 		String id = request.getParameter("productid");
 		int idd = Integer.parseInt(id);
@@ -520,11 +527,12 @@ public class EmployeeController {
 
 	// theem chi tiet san pham
 	@RequestMapping("emdelprod")
-	public String delprod(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+	public String delprod(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 		String id = request.getParameter("productid");
 		int idd = Integer.parseInt(id);
 		Product prdct = productDAO.getProductById(idd);
@@ -543,12 +551,13 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = "emaddproductdetail", method = RequestMethod.POST)
-	public String addProductDetail(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes
-			, HttpServletResponse response) throws IOException{
-		
+	public String addProductDetail(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes,
+			HttpServletResponse response) throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 		int productId = Integer.parseInt(request.getParameter("productID"));
 		int price = Integer.parseInt(request.getParameter("price"));
 		int quantity = Integer.parseInt(request.getParameter("quantity"));
@@ -600,11 +609,13 @@ public class EmployeeController {
 
 	// thao tác với đặt tính của sản phẩm
 	@RequestMapping("emprodattribute")
-	public String prodAttributeG(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+	public String prodAttributeG(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 		List<Type> dsType = type.getAllTypes();
 		List<Origin> dsOrigins = origin.getAllOrigins();
 		List<Brand> dsBrand = brand.getAllBrands();
@@ -619,12 +630,13 @@ public class EmployeeController {
 
 	@RequestMapping(value = "emprodattribute", method = RequestMethod.POST)
 	public String prodAttributeP(@RequestParam(value = "id", required = false) Integer id,
-			@RequestParam("name") String name, @RequestParam("action") String action, @RequestParam("type") String tp
-			, HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+			@RequestParam("name") String name, @RequestParam("action") String action, @RequestParam("type") String tp,
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 		String move = "";
 
 		try {
@@ -698,41 +710,42 @@ public class EmployeeController {
 		return "redirect:emprodattribute.htm#" + move;
 	}
 
-
 	@RequestMapping(value = { "emorder" }, method = RequestMethod.GET)
 	public String order(@RequestParam(value = "idstatus", required = false) Integer idstatus,
 			@RequestParam(value = "idorder", required = false) Integer idorder,
 			@RequestParam(value = "idcustomer", required = false) Integer idcustomer,
 			@RequestParam(value = "fromDate", required = false) String fromDate,
-			@RequestParam(value = "toDate", required = false) String toDate, HttpSession session, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+			@RequestParam(value = "toDate", required = false) String toDate, HttpSession session, ModelMap model,
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
 
 		List<Order> orders = orderDAO.getAllOrders();
 		List<Map<String, Object>> ordersList = new ArrayList<>();
-		
-		if(idorder != null) {
-	    	Order order = orderDAO.getOrderById(idorder);
-	    	if(order == null) {
-	    		model.addAttribute("orders", ordersList);
-	    	    return "employee/order/index";
-	    	}
-	    	 Map<String, Object> ordersMap = new HashMap<>();
-	    	int totalQuantity = 0;
-            List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(order.getId());
 
-            for (OrderDetail orderDetail : orderDetails) {
-                totalQuantity += orderDetail.getQuantity();
-            }
-            ordersMap.put("order", order);
-            ordersMap.put("totalQuantity", totalQuantity);
-            ordersList.add(ordersMap);
-            model.addAttribute("orders", ordersList);
-    	    return "employee/order/index";
-	    }
-		
+		if (idorder != null) {
+			Order order = orderDAO.getOrderById(idorder);
+			if (order == null) {
+				model.addAttribute("orders", ordersList);
+				return "employee/order/index";
+			}
+			Map<String, Object> ordersMap = new HashMap<>();
+			int totalQuantity = 0;
+			List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(order.getId());
+
+			for (OrderDetail orderDetail : orderDetails) {
+				totalQuantity += orderDetail.getQuantity();
+			}
+			ordersMap.put("order", order);
+			ordersMap.put("totalQuantity", totalQuantity);
+			ordersList.add(ordersMap);
+			model.addAttribute("orders", ordersList);
+			return "employee/order/index";
+		}
+
 		if (orders != null) {
 			for (Order order : orders) {
 				boolean matchesStatus;
@@ -774,7 +787,7 @@ public class EmployeeController {
 		Date orderDate = order.getCreateTime();
 		LocalDateTime orderDateTime = orderDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 		// Kiểm tra ngày từ
 		if (fromDate != null) {
@@ -798,12 +811,12 @@ public class EmployeeController {
 	@RequestMapping("emorder/orderdetail/{idOrder}")
 	public String orderdetail(@PathVariable("idOrder") Integer idOrder, HttpSession session, ModelMap model
 
-			, HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
-		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+			, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+		int auth = Authentication.redirectAuthen(request, response);
+
+		if (auth != 2)
+			return "redirect:home.htm";
 
 		Order order = orderDAO.getOrderById(idOrder);
 		if (order == null) {
@@ -836,20 +849,32 @@ public class EmployeeController {
 		return "employee/order/detail";
 	}
 
+	@SuppressWarnings("unused")
 	@RequestMapping("emorder/status/{idOrder}")
 	public String status(@PathVariable("idOrder") Integer idOrder, @RequestParam("status") Integer status,
-			HttpSession session, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+			HttpSession session, ModelMap model, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
+
 		OrderStatus orderStatus = orderStatusDAO.getOrderStatusById(status);
 		Order order = orderDAO.getOrderById(idOrder);
-		int statusId = order.getOrderStatus().getId();
-		if (orderStatus == null) {
-			return "redirect:/emorder.htm";
-		} else if (statusId == 1 || statusId == 4 || statusId == 5) {
-			return "redirect:/emorder.htm";
+		int idStatus = order.getOrderStatus().getId();
+		if (order == null) {
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
+		} else if (orderStatus == null) {
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
+		} else if (idStatus == 1 || idStatus == 4 || idStatus == 5) {
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
+		} else if (status != idStatus + 1) {
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
+		} else if (idStatus == 3 && status == 5) {
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
+		} else if (status > 5 && status < 1) {
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		}
 
 		order.setOrderStatus(orderStatusDAO.getOrderStatusById(status));
@@ -860,27 +885,29 @@ public class EmployeeController {
 
 	@RequestMapping("emorder/cancel/{idOrder}/{idCustomer}")
 	public String cancel(@PathVariable("idOrder") Integer idOrder, @PathVariable("idCustomer") Integer idCustomer,
-			@RequestParam("idReason") Integer idReason, HttpSession session, ModelMap model
-			, HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+			@RequestParam("idReason") Integer idReason, HttpSession session, ModelMap model, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+
 		int auth = Authentication.redirectAuthen(request, response);
-		
-		if(auth!=2) return "redirect:home.htm";
+
+		if (auth != 2)
+			return "redirect:home.htm";
+
 		if (idCustomer == null) {
-			return "redirect:/emorder.htm";
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		} else if (idOrder == null) {
-			return "redirect:/emorder.htm";
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		} else if (idReason == null) {
-			return "redirect:/emorder.htm";
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		}
 
 		Customer customer = cusd.getCustomerById(idCustomer);
 
 		Order order = orderDAO.getOrderById(idOrder);
 		if (order == null || (order.getOrderStatus().getId() != 1 && order.getOrderStatus().getId() != 2)) {
-			return "redirect:/emorder.htm";
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		} else if (order.getCustomer().getId() != idCustomer) {
-			return "redirect:/emorder.htm";
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		}
 
 		List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(idOrder);
@@ -889,7 +916,7 @@ public class EmployeeController {
 		if (orderDetails != null) {
 			for (OrderDetail orderDetail : orderDetails) {
 				ProductDetail productDetail = orderDetail.getProductDetail();
-				Product product = productDetail.getProduct();
+//				Product product = productDetail.getProduct();
 
 				Integer total = (int) (orderDetail.getQuantity() * orderDetail.getUnitPrice());
 				Boolean flag = true;
@@ -915,7 +942,7 @@ public class EmployeeController {
 				prdd.updateProductDetail(productDetail);
 			}
 		} else {
-			return "redirect:/emorder.htm";
+			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		}
 
 		Date currentDate = new Date();
@@ -925,5 +952,6 @@ public class EmployeeController {
 		orderDAO.updateOrder(order);
 
 		return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
+
 	}
 }

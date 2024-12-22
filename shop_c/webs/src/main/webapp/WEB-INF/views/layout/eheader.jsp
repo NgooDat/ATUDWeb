@@ -102,7 +102,7 @@
                     </style>
                 </nav><!--shopping_cart-->
                
-                <form style="max-width: 450px; transform: translateX(15px);" action="emsearch.htm" class="u-border-1 u-border-grey-30 u-radius u-search u-search-left u-white u-search-1"
+                <form style="max-width: 450px; transform: translateX(15px); " action="emsearch.htm" class="u-border-1 u-border-grey-30 u-radius u-search u-search-left u-white u-search-1"
                       data-search-token="no-license" method="post">
                     <button class="u-search-button" type="submit">
                         <span class="u-search-icon u-spacing-10 u-search-icon-1">
@@ -118,7 +118,7 @@
                             </svg>
                         </span>
                     </button>
-                    <input class="u-search-input" type="emsearch" name="emsearch" value="" placeholder="Tìm kiếm">
+                    <input style="padding-left: 10px" class="u-search-input" type="search" name="emsearch" value="" placeholder="Tìm kiếm">
                 </form>
             </div>
             <style class="u-sticky-style" data-style-id="8e13">

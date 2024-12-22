@@ -2,19 +2,19 @@ package webshop.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+//import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+//import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,10 +45,9 @@ public class CartController {
 	@Autowired
 	CartDAO cartDAO;
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping("")
 	public String cart(HttpSession session, ModelMap model) {
-		
-		
 
 		List<Cart> dsCart;
 		int givenCustomerId;
@@ -119,14 +118,17 @@ public class CartController {
 		return "user/cart";
 	}
 
-	@ResponseBody // Để trả về dữ liệu trực tiếp (JSON hoặc string)
+	@SuppressWarnings("unchecked")
+	@ResponseBody // Để trả về dữ liệu trực tiếp
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String insert(@RequestParam("price") int price, @RequestParam("pdid") int pdid,
 			@RequestParam("quantity") int quantity, HttpSession session) {
 
 		ProductDetail productDetail = productDetailDAO.getProductDetailById(pdid);
 		if (productDetail == null) {
-			return "{\"message\": \"Không tồn tại sản phẩm này!\", \"status\": \"false\"}";
+			return "one";
+		} else if (quantity < 1 || quantity > productDetail.getQuantity()) {
+			return "two";
 		}
 
 		String email = (String) session.getAttribute("user");
@@ -140,12 +142,16 @@ public class CartController {
 
 			for (Cart cart : carts) {
 				if (cart.getProductDetail().getId() == pdid && cart.getStatus() == 0) {
-					cart.setQuantity(cart.getQuantity() + quantity);
+					if ((cart.getQuantity() + quantity) >= productDetail.getQuantity()) {
+						cart.setQuantity(productDetail.getQuantity());
+					} else {
+						cart.setQuantity(cart.getQuantity() + quantity);
+					}
 					cartDAO.updateCart(cart);
 
 					carts = cartDAO.getCartsByCustomerId(customer.getId());
 					session.setAttribute("carts", carts);
-					return "{\"message\": \"Sản phẩm đã có trong giỏ hàng!\", \"status\": \"false\"}";
+					return "three";
 				}
 			}
 
@@ -160,10 +166,14 @@ public class CartController {
 			} else {
 				for (Cart cart : carts) {
 					if (cart.getProductDetail().getId() == pdid && cart.getStatus() == 0) {
-						cart.setQuantity(cart.getQuantity() + quantity);
+						if ((cart.getQuantity() + quantity) >= productDetail.getQuantity()) {
+							cart.setQuantity(productDetail.getQuantity());
+						} else {
+							cart.setQuantity(cart.getQuantity() + quantity);
+						}
 
 						session.setAttribute("carts", carts);
-						return "{\"message\": \"Sản phẩm đã có trong giỏ hàng!\", \"status\": \"false\"}";
+						return "three";
 					}
 				}
 			}
@@ -174,29 +184,39 @@ public class CartController {
 		}
 
 		session.setAttribute("carts", carts);
-		return "{\"message\": \"Sản phẩm đã được thêm vào giỏ hàng!\", \"status\": \"true\"}";
+		return "four";
 	}
 
-	@ResponseBody // Để trả về dữ liệu trực tiếp (JSON hoặc string)
+	@ResponseBody // Để trả về dữ liệu trực tiếp
 	@RequestMapping(value = "/del", method = RequestMethod.GET)
 	public String delete(@RequestParam("idCart") int idCart, HttpSession session) {
 
+		@SuppressWarnings("unchecked")
+		List<Integer> selectIdCarts = (List<Integer>) session.getAttribute("selectIdCarts");
+
 		String email = (String) session.getAttribute("user");
+		@SuppressWarnings("unchecked")
 		List<Cart> carts = (List<Cart>) session.getAttribute("carts");
 		if (email != null) {
 			cartDAO.deleteCart(idCart);
+			if (selectIdCarts != null && selectIdCarts.contains(idCart)) {
+				selectIdCarts.remove(Integer.valueOf(idCart));
+			}
 		} else {
 			if (carts != null) {
 				carts.removeIf(cart -> cart.getID() == idCart);
-
+				if (selectIdCarts != null && selectIdCarts.contains(idCart)) {
+					selectIdCarts.remove(Integer.valueOf(idCart));
+				}
 				session.setAttribute("carts", carts);
 			}
 		}
 
-		return "{\"message\": \"Xóa giỏ hàng thành công!\", \"status\": \"success\"}";
+		session.setAttribute("selectIdCarts", selectIdCarts);
+		return "Xóa giỏ hàng thành công!!!";
 	}
 
-	@ResponseBody // Để trả về dữ liệu trực tiếp (JSON hoặc string)
+	@ResponseBody // Để trả về dữ liệu trực tiếp
 	@RequestMapping(value = "/upd", method = RequestMethod.GET)
 	public String update(@RequestParam("idCart") int idCart, @RequestParam("quantity") int quantity,
 			@RequestParam("total") int total, HttpSession session) {
@@ -208,6 +228,7 @@ public class CartController {
 			cart.setTotalPrice(total);
 			cartDAO.updateCart(cart);
 		} else {
+			@SuppressWarnings("unchecked")
 			List<Cart> carts = (List<Cart>) session.getAttribute("carts");
 			if (carts != null) {
 				Cart cart = carts.stream().filter(c -> c.getID() == idCart).findFirst().orElse(null);
@@ -219,19 +240,61 @@ public class CartController {
 			}
 		}
 
-		return "{\"message\": \"Sửa số lượng thành công!\", \"status\": \"success\"}";
+		return "Sửa số lượng thành công!!!";
 	}
 
-	@RequestMapping(value = "/selected", method = RequestMethod.POST)
-	public ResponseEntity<Void> saveSelectedCartIds(@RequestBody Map<String, List<Integer>> data, HttpSession session) {
-		// Lấy danh sách idCart từ request
-		List<Integer> idCart = data.get("idCart");
-		if (idCart != null && !idCart.isEmpty()) {
-			// Lưu danh sách vào HttpSession
-			session.setAttribute("selectedCartIds", idCart);
-			return new ResponseEntity<>(HttpStatus.OK); // Trả về trạng thái 200 OK
+	@SuppressWarnings("unchecked")
+	@ResponseBody // Để trả về dữ liệu trực tiếp
+	@RequestMapping(value = "select/{idCart}", method = RequestMethod.GET)
+	public String selectedIdCart(@PathVariable("idCart") Integer idCart, @RequestParam("checkvalue") Boolean checkvalue,
+			HttpSession session, ModelMap model) {
+
+		List<Integer> selectIdCarts = (List<Integer>) session.getAttribute("selectIdCarts");
+		if (selectIdCarts == null) {
+			selectIdCarts = new ArrayList<>();
 		}
-		return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Trả về trạng thái 400 Bad Request
+
+		if (checkvalue == null) {
+			return "Hớ???";
+		}
+
+		String email = (String) session.getAttribute("user");
+
+		if (email != null) {
+			Account account = accountDAO.getAccountByEmail(email);
+			Customer customer = customerDAO.getCustomerByAccountID(account.getId());
+			Cart cart = cartDAO.getCartById(idCart);
+			if (cart.getCustomer().getId() != customer.getId()) {
+				return "Hả???";
+			} else {
+				if (checkvalue != null && checkvalue) {
+					if (!selectIdCarts.contains(idCart)) {
+						selectIdCarts.add(idCart);
+					}
+				} else {
+					selectIdCarts.remove(Integer.valueOf(idCart));
+				}
+			}
+
+		} else {
+			List<Cart> carts = (List<Cart>) session.getAttribute("carts");
+			if (carts != null) {
+				Cart cart = carts.stream().filter(c -> c.getID() == idCart).findFirst().orElse(null);
+
+				if (cart != null) {
+					if (checkvalue != null && checkvalue) {
+						if (!selectIdCarts.contains(idCart)) {
+							selectIdCarts.add(idCart);
+						}
+					} else {
+						selectIdCarts.remove(Integer.valueOf(idCart));
+					}
+				}
+			}
+		}
+
+		session.setAttribute("selectIdCarts", selectIdCarts);
+		return "OK!!!";
 	}
 
 }

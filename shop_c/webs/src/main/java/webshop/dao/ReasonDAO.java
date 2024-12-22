@@ -2,26 +2,67 @@ package webshop.dao;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Repository;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import webshop.entity.Reason;
+import webshop.security.Authentication;
 
 @Repository
 public class ReasonDAO {
 
+	@Autowired
+    private SessionFactory adminSessionFactory;
+    
     @Autowired
-    private SessionFactory sessionFactory;
+    private SessionFactory employeeSessionFactory;
+    
+    @Autowired
+    private SessionFactory userSessionFactory;
+
+    @Autowired
+    private SessionFactory guestSessionFactory;
+
+    // Lấy SessionFactory dựa trên vai trò
+    private SessionFactory getSessionFactoryBasedOnRole(int role) {
+        if (role == 1 ) {
+            return adminSessionFactory;
+        } else if (role == 2) {
+            return employeeSessionFactory;
+        } else if (role == 3 ) {
+            return userSessionFactory;
+        } else if(role == 0) {
+        	return guestSessionFactory;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+    }
+
+    public static HttpServletRequest getCurrentHttpRequest() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            throw new IllegalStateException("Không có request hiện tại.");
+        }
+        return (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+    }
+
 
     // Lấy tất cả lý do
     @SuppressWarnings("unchecked")
     public List<Reason> getAllReasons() {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             return session.createQuery("FROM Reason").list();
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,7 +78,8 @@ public class ReasonDAO {
     public Reason getReasonById(int id) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             return (Reason) session.get(Reason.class, id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,7 +96,8 @@ public class ReasonDAO {
         Transaction transaction = null;
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
 
             session.save(reason);
@@ -77,7 +120,8 @@ public class ReasonDAO {
         Transaction transaction = null;
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
 
             session.update(reason);
@@ -100,7 +144,8 @@ public class ReasonDAO {
         Transaction transaction = null;
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
 
             Reason reason = (Reason) session.get(Reason.class, id);

@@ -26,12 +26,12 @@ function updateCartTotal(idCart, total, quantity) {
 	fetch(`cart/upd.htm?idCart=${idCart}&quantity=${quantity}&total=${total}`, {
 		method: 'GET',
 		headers: {
-			'Content-Type': 'application/json'
+			'Accept': 'text/plain' // Server trả về định dạng text
 		}
 	})
-		.then(response => response.json())
+		.then(response => response.text())  // Server trả về chuỗi
 		.then(data => {
-			console.log('Cập nhật tổng tiền thành công!', data);
+			console.log(data);
 		})
 		.catch(error => console.error('Lỗi:', error));
 }
@@ -117,12 +117,12 @@ function deleteCart(idCart) {
 		fetch('cart/del.htm?idCart=' + idCart, {
 			method: 'GET',
 			headers: {
-				'Content-Type': 'application/json'
+				'Accept': 'text/plain' // Server trả về định dạng text
 			}
 		})
-			.then(response => response.json())  // Nếu bạn trả về JSON từ server
+			.then(response => response.text())  // Server trả về chuỗi
 			.then(data => {
-				console.log('Xóa sản phẩm thành công!!!', data);
+				console.log(data);
 				const allCartProducts = document.querySelectorAll('.cartProduct');
 				if (allCartProducts.length === 1) {
 					window.location.href = 'cart.htm';
@@ -156,26 +156,39 @@ document.getElementById('confirmBtn').addEventListener('click', function(event) 
 		.map(checkbox => checkbox.id.replace('checkbox', '')); // Lấy idCart từ id của checkbox
 
 	if (selectedIds.length > 0) {
-		// Gửi danh sách idCart qua AJAX
-		fetch('cart/selected.htm', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ idCart: selectedIds }) // Gửi danh sách dưới dạng JSON
-		})
-			.then(response => {
-				if (response.ok) {
-					// Chuyển hướng đến trang thanh toán nếu thành công
-					window.location.href = 'payment.htm';
-				} else {
-					alert('Đã xảy ra lỗi, vui lòng thử lại.');
-				}
-			})
-			.catch(error => console.error('Lỗi:', error));
+		window.location.href = 'payment.htm';
 	} else {
 		// Nếu không có checkbox nào được chọn, hiển thị cảnh báo
 		alert('Vui lòng chọn ít nhất một sản phẩm để tiếp tục thanh toán.');
 		event.preventDefault(); // Ngăn hành động mặc định
 	}
 });
+
+document.querySelectorAll('.u-checkbox').forEach(checkbox => {
+	checkbox.addEventListener('change', function() {
+		// Lấy cartid từ ID của checkbox
+		const cartid = this.id.replace('checkbox', '');
+		const checkvalue = this.checked ? 1 : 0; // Lấy giá trị dựa trên trạng thái của checkbox
+
+		// Gửi yêu cầu fetch
+		fetch(`cart/select/${cartid}.htm?checkvalue=${checkvalue}`, {
+			method: 'GET',
+			headers: {
+				'Accept': 'text/plain' // Server trả về định dạng text
+			}
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Lỗi!!!');
+				}
+				return response.text(); // Chuyển đổi phản hồi thành text
+			})
+			.then(data => {
+				console.log(data);
+			})
+			.catch(error => {
+				console.error('Lỗi!!!', error);
+			});
+	});
+});
+

@@ -15,20 +15,25 @@ function addToCart() {
 	fetch('cart/add.htm?pdid=' + selectedSize.id + '&price=' + priceElement.innerHTML + '&quantity=' + quantity.value, {
 		method: 'GET',
 		headers: {
-			'Content-Type': 'application/json'
+			'Accept': 'text/plain' // Server trả về định dạng text
 		}
 	})
-		.then(response => response.json())  // Nếu bạn trả về JSON từ server
+		.then(response => response.text())  // Server trả về chuỗi
 		.then(data => {
-			if (data.status === 'false') {
-				console.log('Sản phẩm đã có trong giỏ hàng!!!', data);
+			if (data === 'one') {
+				console.log('Không có sản phẩm này!!! - ' + data);
+				alert('Không có sản phẩm này!!!');
+			} else if (data === 'two') {
+				console.log('Số lượng không hợp lệ!!! - ' + data);
+				alert('Số lượng không hợp lệ!!!');
+			} else if (data === 'three') {
+				console.log('Sản phẩm đã có trong giỏ hàng!!! - ' + data);
 				alert('Sản phẩm đã có trong giỏ hàng!!!');
 			} else {
-				console.log('Thêm sản phẩm thành công: ', data);
+				console.log('Thêm sản phẩm thành công! - ' + data);
 				document.querySelector('#quantityCart').innerHTML = newQuantityCart;
 				alert('Sản phẩm đã thêm vào giỏ hàng!!!');
 			}
-			// Bạn có thể thực hiện các thao tác khác như hiển thị thông báo
 		})
 		.catch(error => console.error('Lỗi:', error));
 }

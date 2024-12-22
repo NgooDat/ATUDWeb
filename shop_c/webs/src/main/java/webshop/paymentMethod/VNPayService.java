@@ -16,6 +16,7 @@ public class VNPayService {
 	@Autowired
 	private VNPayConfig config;
 
+	@SuppressWarnings("static-access")
 	public JsonObject createPayment(HttpServletRequest request, long amount, String bankCode, String language)
 			throws Exception {
 		String vnp_Version = "2.1.0";

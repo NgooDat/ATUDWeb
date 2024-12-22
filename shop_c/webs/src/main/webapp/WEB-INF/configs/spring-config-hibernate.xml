@@ -13,34 +13,150 @@
 			http://www.springframework.org/schema/tx/spring-tx.xsd
 			http://www.springframework.org/schema/mvc 
 			http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+			
+			
+	
 	
 	<!-- Kết nối CSDL -->
-	<bean id="dataSource" 
+	<bean id="adminSource" 
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="sa"
-			p:password="123">
+			p:username="dbadmin"
+			p:password="Dat12345@#">
 	</bean>
 	
 	<!-- Cấu hình Hibernate -->
-	<bean id="sessionFactory" 
+	<bean id="adminSessionFactory" 
       class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
-    <property name="dataSource" ref="dataSource"/>
-    <property name="hibernateProperties">
-      <props>        
-        <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>          
-        <prop key="hibernate.show_sql">false</prop>
-      </props>
-    </property>
-    <property name="packagesToScan" value="webshop.entity"/>
-</bean>
+	    <property name="dataSource" ref="adminSource"/>
+	    <property name="hibernateProperties">
+	      <props>        
+	        <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>          
+	        <prop key="hibernate.show_sql">false</prop>
+	      </props>
+	    </property>
+	    <property name="packagesToScan" value="webshop.entity"/>
+	</bean>
 
 	
 	<!-- Transaction Manager -->
-    <bean id="transactionManager" 
+    <bean id="adminTransactionManager" 
       class="org.springframework.orm.hibernate4.HibernateTransactionManager">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
-    <property name="sessionFactory" ref="sessionFactory"/>
-</bean>
+	    <property name="sessionFactory" ref="adminSessionFactory"/>
+	</bean>
+	
+	<!-- Kết nối CSDL -->
+	<bean id="employeeSource" 
+	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
+			p:username="dbemployee"
+			p:password="Dat12345@#">
+	</bean>
+	
+	<bean id="employeeSessionFactory" 
+      class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+	    <property name="dataSource" ref="employeeSource"/>
+	    <property name="hibernateProperties">
+	      <props>        
+	        <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>          
+	        <prop key="hibernate.show_sql">false</prop>
+	      </props>
+	    </property>
+	    <property name="packagesToScan" value="webshop.entity"/>
+	</bean>
+
+	
+	<!-- Transaction Manager -->
+    <bean id="employeeTransactionManager" 
+      class="org.springframework.orm.hibernate4.HibernateTransactionManager">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+	    <property name="sessionFactory" ref="employeeSessionFactory"/>
+	</bean>
+	
+	<!-- Kết nối CSDL -->
+	<bean id="guestSource" 
+	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
+			p:username="dbguest"
+			p:password="Dat12345@#">
+	</bean>
+	
+	<bean id="guestSessionFactory" 
+      class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+	    <property name="dataSource" ref="guestSource"/>
+	    <property name="hibernateProperties">
+	      <props>        
+	        <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>          
+	        <prop key="hibernate.show_sql">false</prop>
+	      </props>
+	    </property>
+	    <property name="packagesToScan" value="webshop.entity"/>
+	</bean>
+	
+	<!-- Transaction Manager -->
+    <bean id="guestTransactionManager" 
+      class="org.springframework.orm.hibernate4.HibernateTransactionManager">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+	    <property name="sessionFactory" ref="guestSessionFactory"/>
+	</bean>
+	
+	<!-- Kết nối CSDL -->
+	<bean id="userSource" 
+	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
+			p:username="dbuser"
+			p:password="Dat12345@#">
+	</bean>
+	
+	<bean id="userSessionFactory" 
+      class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+	    <property name="dataSource" ref="userSource"/>
+	    <property name="hibernateProperties">
+	      <props>        
+	        <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>          
+	        <prop key="hibernate.show_sql">false</prop>
+	      </props>
+	    </property>
+	    <property name="packagesToScan" value="webshop.entity"/>
+	</bean>
+
+	
+	<!-- Transaction Manager -->
+    <bean id="userTransactionManager" 
+      class="org.springframework.orm.hibernate4.HibernateTransactionManager">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+	    <property name="sessionFactory" ref="userSessionFactory"/>
+	</bean>
+	
+	<!-- Kết nối CSDL -->
+	<bean id="accountSource" 
+	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
+			p:username="dbaccount"
+			p:password="Dat12345@#">
+	</bean>
+
+	
+	
+	<bean id="accountSessionFactory" 
+      class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+	    <property name="dataSource" ref="accountSource"/>
+	    <property name="hibernateProperties">
+	      <props>        
+	        <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>          
+	        <prop key="hibernate.show_sql">false</prop>
+	      </props>
+	    </property>
+	    <property name="packagesToScan" value="webshop.entity"/>
+	</bean>
+
+	
+	<!-- Transaction Manager -->
+    <bean id="accountTransactionManager" 
+      class="org.springframework.orm.hibernate4.HibernateTransactionManager">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
+	    <property name="sessionFactory" ref="accountSessionFactory"/>
+	</bean>
 
 </beans>

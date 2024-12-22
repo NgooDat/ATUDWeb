@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Repository;
 import webshop.entity.Account;
 import webshop.entity.Rule;
@@ -16,15 +17,16 @@ import java.util.Optional;
 
 @Repository
 public class AccountDAO {
+
     @Autowired
-    private SessionFactory sessionFactory;
+    private SessionFactory accountSessionFactory;
 
     // Create
     public boolean saveAccount(Account account) {
         Transaction transaction = null;
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+            session = accountSessionFactory.openSession();
             transaction = session.beginTransaction();
             session.save(account);
             transaction.commit();
@@ -45,7 +47,7 @@ public class AccountDAO {
        email = email.trim();
        password = password.trim();
         try {
-            session = sessionFactory.openSession();
+            session = accountSessionFactory.openSession();
             String hql = "FROM Account WHERE TRIM(email) = :email";
             Account account = (Account) session.createQuery(hql)
                     .setParameter("email", email)
@@ -72,7 +74,7 @@ public class AccountDAO {
     public Account getAccountById(int id) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+            session = accountSessionFactory.openSession();
             return (Account) session.get(Account.class, id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,7 +90,7 @@ public class AccountDAO {
     public Account getAccountByEmail(String email) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+            session = accountSessionFactory.openSession();
             String hql = "FROM Account WHERE email = :email";  // HQL query
             Query query = session.createQuery(hql);  // Sử dụng Hibernate 4's Query
             query.setParameter("email", email);
@@ -105,10 +107,11 @@ public class AccountDAO {
     }
     
     //@@CH 
-    public List<Account> getAccountByRule(Rule rule) {
+    @SuppressWarnings("unchecked")
+	public List<Account> getAccountByRule(Rule rule) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+            session = accountSessionFactory.openSession();
             String hql = "FROM Account WHERE rule = :rule";
             Query query = session.createQuery(hql);  
             query.setParameter("rule", rule);  
@@ -130,7 +133,7 @@ public class AccountDAO {
         Transaction transaction = null;
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+            session = accountSessionFactory.openSession();
             transaction = session.beginTransaction();
             session.update(account);
             transaction.commit();
@@ -151,7 +154,7 @@ public class AccountDAO {
         Transaction transaction = null;
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+            session = accountSessionFactory.openSession();
             transaction = session.beginTransaction();
             Account account = (Account) session.get(Account.class, id);
             if (account != null) {

@@ -5,23 +5,64 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import webshop.entity.Size;
+import webshop.security.Authentication;
 
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Repository
 public class SizeDAO {
 
+	@Autowired
+    private SessionFactory adminSessionFactory;
+    
     @Autowired
-    private SessionFactory sessionFactory;
+    private SessionFactory employeeSessionFactory;
+    
+    @Autowired
+    private SessionFactory userSessionFactory;
+
+    @Autowired
+    private SessionFactory guestSessionFactory;
+
+    // Lấy SessionFactory dựa trên vai trò
+    private SessionFactory getSessionFactoryBasedOnRole(int role) {
+        if (role == 1 ) {
+            return adminSessionFactory;
+        } else if (role == 2) {
+            return employeeSessionFactory;
+        } else if (role == 3 ) {
+            return userSessionFactory;
+        } else if(role == 0) {
+        	return guestSessionFactory;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+    }
+
+    public static HttpServletRequest getCurrentHttpRequest() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            throw new IllegalStateException("Không có request hiện tại.");
+        }
+        return (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+    }
+
+ 
 
     // Lấy tất cả các Size
     @SuppressWarnings("unchecked")
     public List<Size> getAllSizes() {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             List<Size> list = session.createQuery("FROM Size").list();
             return list;
         } catch (Exception e) {
@@ -38,7 +79,8 @@ public class SizeDAO {
     public Size getSizeById(String id) {
         Session session = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             return (Size) session.get(Size.class, id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,7 +97,8 @@ public class SizeDAO {
         Session session = null;
         Transaction transaction = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
             session.save(size);
             transaction.commit();
@@ -78,7 +121,8 @@ public class SizeDAO {
         Session session = null;
         Transaction transaction = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
             session.update(size);
             transaction.commit();
@@ -101,7 +145,8 @@ public class SizeDAO {
         Session session = null;
         Transaction transaction = null;
         try {
-            session = sessionFactory.openSession();
+        	int role = Authentication.getRole();
+            session = getSessionFactoryBasedOnRole(role).openSession();
             transaction = session.beginTransaction();
             Size size = (Size) session.get(Size.class, id);
             if (size != null) {

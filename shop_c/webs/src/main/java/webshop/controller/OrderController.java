@@ -2,7 +2,7 @@ package webshop.controller;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+//import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -34,10 +34,10 @@ import webshop.entity.Cart;
 import webshop.entity.Customer;
 import webshop.entity.Order;
 import webshop.entity.OrderDetail;
-import webshop.entity.OrderStatus;
+//import webshop.entity.OrderStatus;
 import webshop.entity.Product;
 import webshop.entity.ProductDetail;
-import webshop.entity.Reason;
+//import webshop.entity.Reason;
 
 @Controller
 @RequestMapping(value = "order")
@@ -144,7 +144,7 @@ public class OrderController {
 		Date orderDate = order.getCreateTime();
 		LocalDateTime orderDateTime = orderDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 		// Kiểm tra ngày từ
 		if (fromDate != null) {
@@ -237,7 +237,7 @@ public class OrderController {
 		if (orderDetails != null) {
 			for (OrderDetail orderDetail : orderDetails) {
 				ProductDetail productDetail = orderDetail.getProductDetail();
-				Product product = productDetail.getProduct();
+//				Product product = productDetail.getProduct();
 
 				Integer total = (int) (orderDetail.getQuantity() * orderDetail.getUnitPrice());
 				Boolean flag = true;
