@@ -1,0 +1,6 @@
+dbaccount :  tài khoản dùng để kết nối đăng nhập
+dbguest: tài khoản dùng để kết nối khi khách vãn lai vào
+dbadmin: tài khoản mà admin kết nối
+dbemployee: tài khoản mà nhân viên kết nối
+dbuser: tài khoản mà user kết nối
+nhớ đặt mật khẩu mạnh mạnh chứ nó yêu cầu mk mạnh web ko load được
