@@ -64,6 +64,8 @@ import webshop.entity.OrderStatus;
 import webshop.entity.Size;
 import webshop.entity.Staff;
 //import webshop.entity.Product;
+import org.apache.commons.text.StringEscapeUtils;
+
 
 @Controller
 public class EmployeeController {
@@ -180,6 +182,9 @@ public class EmployeeController {
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		int auth = Authentication.redirectAuthen(request, response);
+		name = StringEscapeUtils.escapeHtml4(name);
+	    phone = StringEscapeUtils.escapeHtml4(phone);
+	    address = StringEscapeUtils.escapeHtml4(address);
 
 		if (auth != 2)
 			return "redirect:home.htm";
@@ -293,14 +298,14 @@ public class EmployeeController {
 			return "redirect:home.htm";
 
 		// Lấy các thông tin từ form
-		String name = request.getParameter("name");
-		String description = request.getParameter("description");
+		String name = StringEscapeUtils.escapeHtml4(request.getParameter("name"));
+		String description = StringEscapeUtils.escapeHtml4(request.getParameter("description"));
 
-		String image = request.getParameter("image"); // Lấy tên file từ form
-		String typesID = request.getParameter("typesID");
-		String originsID = request.getParameter("originsID");
-		String brandsID = request.getParameter("brandsID");
-		String materialsID = request.getParameter("materialsID");
+		String image = StringEscapeUtils.escapeHtml4(request.getParameter("image")); // Lấy tên file từ form
+		String typesID = StringEscapeUtils.escapeHtml4(request.getParameter("typesID"));
+		String originsID = StringEscapeUtils.escapeHtml4(request.getParameter("originsID"));
+		String brandsID = StringEscapeUtils.escapeHtml4(request.getParameter("brandsID"));
+		String materialsID = StringEscapeUtils.escapeHtml4(request.getParameter("materialsID"));
 
 		// Debug: Kiểm tra giá trị lấy được
 		System.out.println("Tên sản phẩm: " + name);
@@ -406,12 +411,12 @@ public class EmployeeController {
 			return "redirect:home.htm";
 
 		// Lấy các thông tin từ form
-		String name = request.getParameter("name");
-		String description = request.getParameter("description");
-		String typesID = request.getParameter("typesID");
-		String originsID = request.getParameter("originsID");
-		String brandsID = request.getParameter("brandsID");
-		String materialsID = request.getParameter("materialsID");
+		String name = StringEscapeUtils.escapeHtml4(request.getParameter("name"));
+		String description = StringEscapeUtils.escapeHtml4(request.getParameter("description"));
+		String typesID = StringEscapeUtils.escapeHtml4(request.getParameter("typesID"));
+		String originsID = StringEscapeUtils.escapeHtml4(request.getParameter("originsID"));
+		String brandsID = StringEscapeUtils.escapeHtml4(request.getParameter("brandsID"));
+		String materialsID = StringEscapeUtils.escapeHtml4(request.getParameter("materialsID"));
 
 		// Debug: Kiểm tra giá trị lấy được
 		System.out.println("Tên sản phẩm: " + name);
@@ -630,86 +635,102 @@ public class EmployeeController {
 
 	@RequestMapping(value = "emprodattribute", method = RequestMethod.POST)
 	public String prodAttributeP(@RequestParam(value = "id", required = false) Integer id,
-			@RequestParam("name") String name, @RequestParam("action") String action, @RequestParam("type") String tp,
-			HttpServletRequest request, HttpServletResponse response) throws IOException {
+	                              @RequestParam("name") String name, 
+	                              @RequestParam("action") String action, 
+	                              @RequestParam("type") String tp,
+	                              HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		int auth = Authentication.redirectAuthen(request, response);
+	    // Kiểm tra xác thực
+	    int auth = Authentication.redirectAuthen(request, response);
+	    if (auth != 2)
+	        return "redirect:home.htm";
 
-		if (auth != 2)
-			return "redirect:home.htm";
-		String move = "";
+	    String move = "";
 
-		try {
-			if ("category".equals(tp)) { // Xử lý loại sản phẩm
-				if ("add".equals(action) && name != null) {
-					Type category = new Type();
-					category.setName(name);
-					type.addType(category);
-				} else if ("update".equals(action) && id != null && name != null) {
-					Type category = type.getTypeById(id);
-					if (category != null) {
-						category.setName(name);
-						type.updateType(category);
-					}
-				} else if ("delete".equals(action) && id != null) {
-					type.deleteType(id);
-				}
-				move = "class1";
-			}
-			if ("material".equals(tp)) { // Xử lý chất liệu sản phẩm
-				if ("add".equals(action) && name != null) {
-					Material mt = new Material();
-					mt.setName(name);
-					material.addMaterial(mt);
-				} else if ("update".equals(action) && id != null && name != null) {
-					Material mt = material.getMaterialById(id);
-					if (mt != null) {
-						mt.setName(name);
-						material.updateMaterial(mt);
-					}
-				} else if ("delete".equals(action) && id != null) {
-					material.deleteMaterial(id);
-				}
-				move = "class2";
-			}
-			if ("origin".equals(tp)) { // Xử lý xuất xứ sản phẩm
-				if ("add".equals(action) && name != null) {
-					Origin og = new Origin();
-					og.setName(name);
-					origin.addOrigin(og);
-				} else if ("update".equals(action) && id != null && name != null) {
-					Origin og = origin.getOriginById(id);
-					if (og != null) {
-						og.setName(name);
-						origin.updateOrigin(og);
-					}
-				} else if ("delete".equals(action) && id != null) {
-					origin.deleteOrigin(id);
-				}
-				move = "class3";
-			}
-			if ("brand".equals(tp)) { // Xử lý thương hiệu sản phẩm
-				if ("add".equals(action) && name != null) {
-					Brand br = new Brand();
-					br.setName(name);
-					brand.addBrand(br);
-				} else if ("update".equals(action) && id != null && name != null) {
-					Brand br = brand.getBrandById(id);
-					if (br != null) {
-						br.setName(name);
-						brand.updateBrand(br);
-					}
-				} else if ("delete".equals(action) && id != null) {
-					brand.deleteBrand(id);
-				}
-				move = "class4";
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "redirect:emprodattribute.htm#" + move;
+	    try {
+	        
+	        if (name != null) {
+	            name = StringEscapeUtils.escapeHtml4(name);
+	        }
+
+	        // Xử lý loại sản phẩm
+	        if ("category".equals(tp)) {
+	            if ("add".equals(action) && name != null) {
+	                Type category = new Type();
+	                category.setName(name);
+	                type.addType(category);
+	            } else if ("update".equals(action) && id != null && name != null) {
+	                Type category = type.getTypeById(id);
+	                if (category != null) {
+	                    category.setName(name);
+	                    type.updateType(category);
+	                }
+	            } else if ("delete".equals(action) && id != null) {
+	                type.deleteType(id);
+	            }
+	            move = "class1";
+	        }
+
+	        // Xử lý chất liệu sản phẩm
+	        if ("material".equals(tp)) {
+	            if ("add".equals(action) && name != null) {
+	                Material mt = new Material();
+	                mt.setName(name);
+	                material.addMaterial(mt);
+	            } else if ("update".equals(action) && id != null && name != null) {
+	                Material mt = material.getMaterialById(id);
+	                if (mt != null) {
+	                    mt.setName(name);
+	                    material.updateMaterial(mt);
+	                }
+	            } else if ("delete".equals(action) && id != null) {
+	                material.deleteMaterial(id);
+	            }
+	            move = "class2";
+	        }
+
+	        // Xử lý xuất xứ sản phẩm
+	        if ("origin".equals(tp)) {
+	            if ("add".equals(action) && name != null) {
+	                Origin og = new Origin();
+	                og.setName(name);
+	                origin.addOrigin(og);
+	            } else if ("update".equals(action) && id != null && name != null) {
+	                Origin og = origin.getOriginById(id);
+	                if (og != null) {
+	                    og.setName(name);
+	                    origin.updateOrigin(og);
+	                }
+	            } else if ("delete".equals(action) && id != null) {
+	                origin.deleteOrigin(id);
+	            }
+	            move = "class3";
+	        }
+
+	        // Xử lý thương hiệu sản phẩm
+	        if ("brand".equals(tp)) {
+	            if ("add".equals(action) && name != null) {
+	                Brand br = new Brand();
+	                br.setName(name);
+	                brand.addBrand(br);
+	            } else if ("update".equals(action) && id != null && name != null) {
+	                Brand br = brand.getBrandById(id);
+	                if (br != null) {
+	                    br.setName(name);
+	                    brand.updateBrand(br);
+	                }
+	            } else if ("delete".equals(action) && id != null) {
+	                brand.deleteBrand(id);
+	            }
+	            move = "class4";
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return "redirect:emprodattribute.htm#" + move;
 	}
-
+	
 	@RequestMapping(value = { "emorder" }, method = RequestMethod.GET)
 	public String order(@RequestParam(value = "idstatus", required = false) Integer idstatus,
 			@RequestParam(value = "idorder", required = false) Integer idorder,

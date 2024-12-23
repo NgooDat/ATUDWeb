@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.commons.text.StringEscapeUtils;
 
 @Controller
 public class LoginController {
@@ -67,6 +68,8 @@ public class LoginController {
 			HttpServletRequest request, @RequestParam(value = "remember", required = false) String remember,
 			HttpSession session, Model model, HttpServletResponse response) throws IOException {
 
+		username = StringEscapeUtils.escapeHtml4(username);
+		remember = StringEscapeUtils.escapeHtml4(remember);
 		boolean log = Authentication.isLogin(request, response);
 		if (log) {
 			return "redirect:home.htm";
@@ -200,6 +203,9 @@ public class LoginController {
 			@RequestParam("confirmPassword") String confirmPassword, HttpServletRequest request,
 			HttpServletResponse response, Model model) throws IOException {
 
+		email = StringEscapeUtils.escapeHtml4(email);
+		confirmPassword = StringEscapeUtils.escapeHtml4(confirmPassword);
+		
 		boolean log = Authentication.isLogin(request, response);
 		if (log) {
 			return "redirect:home.htm";
@@ -276,6 +282,10 @@ public class LoginController {
 			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session, Model model)
 			throws IOException {
 
+		name = StringEscapeUtils.escapeHtml4(name);
+		phone = StringEscapeUtils.escapeHtml4(phone);
+		email = StringEscapeUtils.escapeHtml4(email);
+		
 		boolean log = Authentication.isLogin(request, response);
 		if (!log) {
 			return "redirect:login.htm";
@@ -451,7 +461,6 @@ public class LoginController {
 			return "redirect:home.htm";
 		}
 		String code = request.getParameter("code");
-
 		String send = (String) session.getAttribute("code");
 
 		if (code.equals(send)) {

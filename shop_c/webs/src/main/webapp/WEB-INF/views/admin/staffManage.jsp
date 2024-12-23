@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 	<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+	<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html style="font-size: 16px;">
 
@@ -72,7 +73,7 @@
 
 								<!--Sản phẩm nè-->
 								<c:forEach var="staff" items="${staffList}">
-									<tr id="${staff.name}" style="height: 100px;" class="cartProduct">
+									<tr id="${fn:escapeXml(staff.name)}" style="height: 100px;" class="cartProduct">
 										<td id=""
 											class="center u-border-1 u-border-grey-15 u-table-cell u-block-90d4-45">
 											<div
@@ -81,7 +82,7 @@
 													<div class="u-old-price"
 														style="text-decoration: line-through !important;"></div>
 													<div class="u-price" style="font-weight: 700; font-size: 1rem;">
-														${staff.name}</div>
+														${fn:escapeXml(staff.name)}</div>
 												</div>
 											</div>
 										</td>
@@ -93,7 +94,7 @@
 													<div class="u-old-price"
 														style="text-decoration: line-through !important;"></div>
 													<div class="u-price" style="font-weight: 700; font-size: 1rem;">
-														${staff.phone}</div>
+														${fn:escapeXml(staff.phone)}</div>
 												</div>
 											</div>
 										</td>
@@ -105,7 +106,7 @@
 													<div class="u-old-price"
 														style="text-decoration: line-through !important;"></div>
 													<div class="u-price" style="font-weight: 700; font-size: 1rem;">
-														${staff.account.email}</div>
+														${fn:escapeXml(staff.account.email)}</div>
 												</div>
 											</div>
 										</td>
@@ -134,7 +135,7 @@
 														style="text-decoration: line-through !important;"></div>
 													<div class="u-price" style="font-weight: 400;" data-total>
 													<form action="staffInfo.htm" method="post">
-														<input type="hidden" value="${staff.account.id}" name="id">
+														<input type="hidden" value="${fn:escapeXml(staff.account.id)}" name="id">
 														<button class="save">Xem chi tiết</button></div>
 													</form>
 														

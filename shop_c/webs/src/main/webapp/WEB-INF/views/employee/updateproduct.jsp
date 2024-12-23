@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -160,9 +161,9 @@ body {
 	            <select class="select" id="typesID" name="typesID" required>
 						<c:if test="${not empty types}">
 						    <c:forEach var="type" items="${types}">
-						        <option value="${type.id}" 
+						        <option value="${fn:escapeXml(type.id)}" 
 						                <c:if test="${type.id == product.type.id}">selected</c:if>>
-						            ${type.name}
+						            ${fn:escapeXml(type.name)}
 						        </option>
 						    </c:forEach>
 						</c:if>
@@ -174,9 +175,9 @@ body {
 	            <select class="select" id="originsID" name="originsID" required>
 	                <c:if test="${not empty origins}">
 	                    <c:forEach var="origin" items="${origins}">
-	                        <option value="${origin.id}" 
+	                        <option value="${fn:escapeXml(origin.id)}" 
 					                <c:if test="${origin.id == product.origin.id}">selected</c:if>>
-					            ${origin.name}
+					            ${fn:escapeXml(origin.name)}
 					        </option>
 	                    </c:forEach>
 	                </c:if>
@@ -189,9 +190,9 @@ body {
 	
 	                <c:if test="${not empty brands}">
 	                    <c:forEach var="brand" items="${brands}">
-	                        <option value="${brand.id}" 
+	                        <option value="${fn:escapeXml(brand.id)}" 
 					                <c:if test="${brand.id == product.brand.id}">selected</c:if>>
-					            ${brand.name}
+					            ${fn:escapeXml(brand.name)}
 	                    </c:forEach>
 	                </c:if>
 	            </select>
@@ -203,9 +204,9 @@ body {
 	
 	                <c:if test="${not empty materials}">
 	                    <c:forEach var="material" items="${materials}">
-	                        <option value="${material.id}" 
+	                        <option value="${fn:escapeXml(material.id)}" 
 					                <c:if test="${material.id == product.material.id}">selected</c:if>>
-					            ${material.name}
+					            ${fn:escapeXml(material.name)}
 	                    </c:forEach>
 	                </c:if>
 	            </select>

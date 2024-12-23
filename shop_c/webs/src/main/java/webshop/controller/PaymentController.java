@@ -65,6 +65,7 @@ import webshop.paymentMethod.VNPayConfig;
 import webshop.paymentMethod.VNPayService;
 //import webshop.paymentMethod.ZaloPayConfig;
 import webshop.paymentMethod.ZaloPayService;
+import org.apache.commons.text.StringEscapeUtils;
 
 @Controller
 @RequestMapping(value = "payment")
@@ -222,6 +223,10 @@ public class PaymentController {
 		Account account = accountDAO.getAccountByEmail(email);
 		Customer customer = customerDAO.getCustomerByAccountID(account.getId());
 
+		name = StringEscapeUtils.escapeHtml4(name);
+		address = StringEscapeUtils.escapeHtml4(address);
+		note = StringEscapeUtils.escapeHtml4(note);
+		
 		@SuppressWarnings("unchecked")
 		List<Integer> selectIdCarts= (List<Integer>) session.getAttribute("selectIdCarts");
 
@@ -307,6 +312,12 @@ public class PaymentController {
 			@RequestParam("name") String name, @RequestParam("address") String address,
 			@RequestParam("note") String note, @RequestParam("paymentMethod") int paymentMethod, Model model,
 			HttpSession session) {
+		
+		name = StringEscapeUtils.escapeHtml4(name);
+		address = StringEscapeUtils.escapeHtml4(address);
+		note = StringEscapeUtils.escapeHtml4(note);
+		phone = StringEscapeUtils.escapeHtml4(phone);
+		
 		String email = (String) session.getAttribute("user");
 		if (email == null) {
 			return "redirect:/login.htm";

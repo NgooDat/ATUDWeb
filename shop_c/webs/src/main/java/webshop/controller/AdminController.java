@@ -29,6 +29,7 @@ import webshop.security.Authentication;
 import webshop.security.Bcrypt;
 //import webshop.security.JwtUtil;
 //import webshop.security.Roles;
+import org.apache.commons.text.StringEscapeUtils;
 
 @Controller
 public class AdminController {
@@ -97,6 +98,10 @@ public class AdminController {
             ModelMap model,
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
+    	
+    	name = StringEscapeUtils.escapeHtml4(name);
+	    phone = StringEscapeUtils.escapeHtml4(phone);
+	    address = StringEscapeUtils.escapeHtml4(address);
 
     	int auth = Authentication.redirectAuthen(request, response);
 		
@@ -165,6 +170,11 @@ public class AdminController {
             ModelMap model,
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
+    	
+    	name = StringEscapeUtils.escapeHtml4(name);
+	    phone = StringEscapeUtils.escapeHtml4(phone);
+	    address = StringEscapeUtils.escapeHtml4(address);
+	    email = StringEscapeUtils.escapeHtml4(email);
 
     	int auth = Authentication.redirectAuthen(request, response);
 		

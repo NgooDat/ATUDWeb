@@ -36,6 +36,7 @@ import webshop.entity.Product;
 import webshop.entity.ProductDetail;
 import webshop.security.Authentication;
 import webshop.security.Bcrypt;
+import org.apache.commons.text.StringEscapeUtils;
 
 @Controller
 public class UserController {
@@ -146,18 +147,12 @@ public class UserController {
 
 	@RequestMapping(value="productinfo")
 	public String productinfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-		
-
 		if (request.getParameter("proid") == null) {
 			return "redirect:/home.htm";
 		}
 		int proid = Integer.parseInt(request.getParameter("proid"));
-
 		Product prod = product.getProductById(proid);
-
 		List<ProductDetail> dsDe = prdd.getAllProductDetails();
-
 		List<ProductDetail> toRemove = new ArrayList<>();
 		for (ProductDetail d : dsDe) {
 			if (d.getProduct().getId() == proid) {
@@ -178,8 +173,6 @@ public class UserController {
 	    if(!log) {
 	    	return "redirect:login.htm";
 	    }
-
-
 		String email = (String) session.getAttribute("user");
 
 		Account acc = accd.getAccountByEmail(email);
@@ -210,6 +203,9 @@ public class UserController {
 	    HttpServletRequest request,
 	    HttpServletResponse response) throws IOException
 	 {
+		name = StringEscapeUtils.escapeHtml4(name);
+	    phone = StringEscapeUtils.escapeHtml4(phone);
+	    email = StringEscapeUtils.escapeHtml4(email);
 		
 		boolean log = Authentication.isLogin(request, response);
 	    if(!log) {

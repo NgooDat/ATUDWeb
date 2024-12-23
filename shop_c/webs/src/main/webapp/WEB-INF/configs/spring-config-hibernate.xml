@@ -22,8 +22,8 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="dbadmin"
-			p:password="Dat12345@#">
+			p:username="sa"
+			p:password="123">
 	</bean>
 	
 	<!-- Cấu hình Hibernate -->
@@ -51,8 +51,8 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="dbemployee"
-			p:password="Dat12345@#">
+			p:username="sa"
+			p:password="123">
 	</bean>
 	
 	<bean id="employeeSessionFactory" 
@@ -79,8 +79,8 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="dbguest"
-			p:password="Dat12345@#">
+			p:username="sa"
+			p:password="123">
 	</bean>
 	
 	<bean id="guestSessionFactory" 
@@ -106,8 +106,8 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="dbuser"
-			p:password="Dat12345@#">
+			p:username="sa"
+			p:password="123">
 	</bean>
 	
 	<bean id="userSessionFactory" 
@@ -134,8 +134,8 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="dbaccount"
-			p:password="Dat12345@#">
+			p:username="sa"
+			p:password="123">
 	</bean>
 
 	
