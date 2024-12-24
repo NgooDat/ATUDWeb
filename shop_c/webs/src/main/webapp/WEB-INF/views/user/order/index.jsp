@@ -129,7 +129,7 @@
 												<div class="u-price"
 													style="font-weight: 700; font-size: 1rem;">
 													<a class="u-product-title-link"
-														href="order/orderdetail/${order.order.id}.htm">${order.order.id}</a>
+														href="order/orderdetail/${order.orderId}.htm">${order.orderId}}</a>
 												</div>
 											</div>
 										</div>
@@ -211,7 +211,7 @@
 												<div class="u-price"
 													style="font-weight: 700; font-size: 1rem;">
 													<a class="u-product-title-link"
-														href="order/orderdetail/${order.order.id}.htm">Xem chi
+														href="order/orderdetail/${order.orderId}.htm">Xem chi
 														tiết</a>
 												</div>
 											</div>

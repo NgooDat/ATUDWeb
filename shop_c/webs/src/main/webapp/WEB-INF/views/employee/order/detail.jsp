@@ -62,7 +62,7 @@
 					class="u-cart-products-table u-table u-table-responsive u-block-90d4-7">
 					<div class="order-info">
 						<p class="left">
-							<strong>Mã đơn hàng: </strong>${order.id}</p>
+							<strong>Mã đơn hàng: </strong>${orderId}</p>
 						<p class="center">
 							<strong>Ngày tạo: </strong>
 							<fmt:formatDate value="${order.createTime}"
@@ -257,7 +257,7 @@
 												<div class="u-price"
 													style="font-weight: 700; font-size: 1rem;">
 													<a class="u-product-title-link"
-														href="productinfo.htm?proid=${orderDetail.product.id}">Xem
+														href="productinfo.htm?proid=${prodId}">Xem
 														chi tiết</a>
 												</div>
 											</div>
@@ -374,7 +374,7 @@
 					<div class="u-cart-block u-indent-30">
 						<div id="idCustomer" class="order-info">
 							<p class="left">
-								<strong>Mã khách hàng: </strong>${order.customer.id}
+								<strong>Mã khách hàng: </strong>${cusId}
 							</p>
 						</div>
 						<div class="order-info">

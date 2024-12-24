@@ -54,6 +54,7 @@ import webshop.entity.Cart;
 import webshop.entity.Customer;
 import webshop.entity.Type;
 import webshop.security.Authentication;
+import webshop.security.Base64Aes;
 //import webshop.security.JwtUtil;
 //import webshop.security.Roles;
 import webshop.entity.Origin;
@@ -106,6 +107,8 @@ public class EmployeeController {
 	CartDAO cartDAO;
 	@Autowired
 	StaffDAO staffDAO;
+	
+	private String base64;
 
 	@RequestMapping("emhome")
 	public String homee(ModelMap model, HttpSession ses, HttpServletRequest request, HttpServletResponse response)
@@ -121,7 +124,7 @@ public class EmployeeController {
 
 	@RequestMapping("emproduct")
 	public String emproduct(ModelMap model, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+			throws Exception {
 		int auth = Authentication.redirectAuthen(request, response);
 
 		if (auth != 2)
@@ -137,8 +140,10 @@ public class EmployeeController {
 			Double minPrice = dsDetail.stream().filter(detail -> detail.getProduct().getId() == p.getId())
 					.mapToDouble(ProductDetail::getPrice).min() // Lấy giá nhỏ nhất
 					.orElse(0); // Nếu không tìm thấy, trả về NaN
+			
+			base64 = Base64Aes.encrypt(Integer.toString(p.getId()));
 
-			productInfoList.add(new Object[] { p.getId(), p.getName(), minPrice, p.getImage() });
+			productInfoList.add(new Object[] { p.getId(), p.getName(), minPrice, p.getImage(), base64 });
 		}
 
 		model.addAttribute("message", "Sản phẩm của shop");
@@ -369,7 +374,7 @@ public class EmployeeController {
 	}
 
 	@RequestMapping("updateprod")
-	public String update(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String update(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
@@ -383,10 +388,12 @@ public class EmployeeController {
 		List<Material> dsMaterials = material.getAllMaterials(); // Lấy tất cả chất liệu
 
 		String sid = request.getParameter("productId");
-		int id = Integer.parseInt(sid);
+		String base = Base64Aes.decrypt(sid);
+		int id = Integer.parseInt(base);
 		Product pr = product.getProductById(id);
 
 		// Thêm các thông tin vào model
+		model.addAttribute("encrypt",sid);
 		model.addAttribute("product", pr);
 		model.addAttribute("types", dsTypes);
 		model.addAttribute("sizes", dsSizes);
@@ -403,7 +410,7 @@ public class EmployeeController {
 	@RequestMapping(value = "updateprod", method = RequestMethod.POST)
 	public String updateProduct(HttpServletRequest request, Model model,
 			@RequestParam(value = "file", required = false) MultipartFile file, HttpServletResponse response)
-			throws IOException {
+			throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
@@ -441,7 +448,8 @@ public class EmployeeController {
 
 		// Lấy sản phẩm từ cơ sở dữ liệu
 		String sid = request.getParameter("productId");
-		int id = Integer.parseInt(sid);
+		String base = Base64Aes.decrypt(sid);
+		int id = Integer.parseInt(base);
 		Product product = productDAO.getProductById(id);
 
 		// Cập nhật các thông tin cơ bản
@@ -479,7 +487,7 @@ public class EmployeeController {
 	}
 
 	@RequestMapping("emproductinfo")
-	public String productinfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String productinfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
@@ -489,7 +497,8 @@ public class EmployeeController {
 		if (request.getParameter("proid") == null) {
 			return "redirect:/home.htm";
 		}
-		int proid = Integer.parseInt(request.getParameter("proid"));
+		String base64 = Base64Aes.decrypt(request.getParameter("proid"));
+		int proid = Integer.parseInt(base64);
 
 		Product prod = product.getProductById(proid);
 
@@ -501,8 +510,11 @@ public class EmployeeController {
 				toRemove.add(d);
 			}
 		}
+		
+		
 		request.setAttribute("productDetail", toRemove);
 		request.setAttribute("product", prod);
+		request.setAttribute("encrypt", request.getParameter("proid"));
 
 		return "employee/product";
 	}
@@ -510,15 +522,15 @@ public class EmployeeController {
 	// theem chi tiet san pham
 	@RequestMapping("emaddproductdetail")
 	public String home_addPrD(ModelMap model, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+			throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
 		if (auth != 2)
 			return "redirect:home.htm";
 		// Lấy danh sách sản phẩm
-		String id = request.getParameter("productid");
-		int idd = Integer.parseInt(id);
+		String base64 = Base64Aes.decrypt(request.getParameter("productid"));
+		int idd = Integer.parseInt(base64);
 		Product prdct = productDAO.getProductById(idd);
 
 		model.addAttribute("product", prdct);
@@ -526,23 +538,27 @@ public class EmployeeController {
 		// Lấy danh sách kích thước
 		List<Size> sizes = size.getAllSizes(); // Service để lấy danh sách kích thước
 		model.addAttribute("sizes", sizes);
+		model.addAttribute("encrypt", request.getParameter("productid"));
+		
 
 		return "employee/addProductDetail";
 	}
 
 	// theem chi tiet san pham
 	@RequestMapping("emdelprod")
-	public String delprod(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String delprod(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
 		if (auth != 2)
 			return "redirect:home.htm";
 		String id = request.getParameter("productid");
+		id = Base64Aes.decrypt(id);
 		int idd = Integer.parseInt(id);
 		Product prdct = productDAO.getProductById(idd);
 
 		List<ProductDetail> listprdd = prdd.getAllProductDetails();
+		
 
 		for (ProductDetail prd : listprdd) {
 			if (prd.getProduct().getId() == prdct.getId()) {
@@ -557,13 +573,15 @@ public class EmployeeController {
 
 	@RequestMapping(value = "emaddproductdetail", method = RequestMethod.POST)
 	public String addProductDetail(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response) throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
 		if (auth != 2)
 			return "redirect:home.htm";
-		int productId = Integer.parseInt(request.getParameter("productID"));
+		String sid  = Base64Aes.decrypt(request.getParameter("productId")) ;
+		
+		int productId = Integer.parseInt(sid);
 		int price = Integer.parseInt(request.getParameter("price"));
 		int quantity = Integer.parseInt(request.getParameter("quantity"));
 		String sizeId = request.getParameter("sizeID");
@@ -737,7 +755,7 @@ public class EmployeeController {
 			@RequestParam(value = "idcustomer", required = false) Integer idcustomer,
 			@RequestParam(value = "fromDate", required = false) String fromDate,
 			@RequestParam(value = "toDate", required = false) String toDate, HttpSession session, ModelMap model,
-			HttpServletRequest request, HttpServletResponse response) throws IOException {
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
@@ -760,8 +778,10 @@ public class EmployeeController {
 			for (OrderDetail orderDetail : orderDetails) {
 				totalQuantity += orderDetail.getQuantity();
 			}
+			base64 = Base64Aes.encrypt(Integer.toString(order.getId()));
 			ordersMap.put("order", order);
 			ordersMap.put("totalQuantity", totalQuantity);
+			ordersMap.put("orderId", base64);
 			ordersList.add(ordersMap);
 			model.addAttribute("orders", ordersList);
 			return "employee/order/index";
@@ -787,8 +807,10 @@ public class EmployeeController {
 					for (OrderDetail orderDetail : orderDetails) {
 						totalQuantity += orderDetail.getQuantity();
 					}
+					base64 = Base64Aes.encrypt(Integer.toString(order.getId()));
 					ordersMap.put("order", order);
 					ordersMap.put("totalQuantity", totalQuantity);
+					ordersMap.put("orderId", base64);
 					ordersList.add(ordersMap);
 				}
 			}
@@ -830,22 +852,26 @@ public class EmployeeController {
 	}
 
 	@RequestMapping("emorder/orderdetail/{idOrder}")
-	public String orderdetail(@PathVariable("idOrder") Integer idOrder, HttpSession session, ModelMap model
+	public String orderdetail(@PathVariable("idOrder") String idOrder, HttpSession session, ModelMap model
 
-			, HttpServletRequest request, HttpServletResponse response) throws IOException {
+			, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
 		if (auth != 2)
 			return "redirect:home.htm";
-
-		Order order = orderDAO.getOrderById(idOrder);
+		base64 = Base64Aes.decrypt(idOrder);
+		int id = Integer.parseInt(base64);
+		Order order = orderDAO.getOrderById(id);
 		if (order == null) {
 			return "redirect:/emorder.htm";
 		}
 
-		List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(idOrder);
+		List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(id);
 		List<Map<String, Object>> orderDetailsList = new ArrayList<Map<String, Object>>();
+		
+		String idCus = "";
+		String prodid = "";
 
 		if (orderDetails != null) {
 			for (OrderDetail orderDetail : orderDetails) {
@@ -857,12 +883,17 @@ public class EmployeeController {
 				orderDetailsMap.put("productDetail", productDetail);
 				orderDetailsMap.put("orderDetail", orderDetail);
 				orderDetailsMap.put("customer", orderDetail.getOrder().getCustomer());
+				idCus = Base64Aes.encrypt(Integer.toString(orderDetail.getOrder().getCustomer().getId()));
+				prodid = Base64Aes.encrypt(Integer.toString(product.getId()));
 				orderDetailsList.add(orderDetailsMap);
 			}
 		} else {
 			return "redirect:/order.htm";
 		}
-
+		
+		model.addAttribute("orderId", idOrder);
+		model.addAttribute("cusId", idCus);
+		model.addAttribute("prodId", prodid);
 		model.addAttribute("order", order);
 		model.addAttribute("orderDetails", orderDetailsList);
 		model.addAttribute("cancelReasons", reasonDAO.getAllReasons());
@@ -872,17 +903,19 @@ public class EmployeeController {
 
 	@SuppressWarnings("unused")
 	@RequestMapping("emorder/status/{idOrder}")
-	public String status(@PathVariable("idOrder") Integer idOrder, @RequestParam("status") Integer status,
+	public String status(@PathVariable("idOrder") String idOrder, @RequestParam("status") Integer status,
 			HttpSession session, ModelMap model, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+			throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
 		if (auth != 2)
 			return "redirect:home.htm";
 
+		base64 = Base64Aes.decrypt(idOrder);
+		int id = Integer.parseInt(base64);
 		OrderStatus orderStatus = orderStatusDAO.getOrderStatusById(status);
-		Order order = orderDAO.getOrderById(idOrder);
+		Order order = orderDAO.getOrderById(id);
 		int idStatus = order.getOrderStatus().getId();
 		if (order == null) {
 			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
@@ -905,9 +938,9 @@ public class EmployeeController {
 	}
 
 	@RequestMapping("emorder/cancel/{idOrder}/{idCustomer}")
-	public String cancel(@PathVariable("idOrder") Integer idOrder, @PathVariable("idCustomer") Integer idCustomer,
+	public String cancel(@PathVariable("idOrder") String idOrder, @PathVariable("idCustomer") Integer idCustomer,
 			@RequestParam("idReason") Integer idReason, HttpSession session, ModelMap model, HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response) throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
@@ -921,17 +954,19 @@ public class EmployeeController {
 		} else if (idReason == null) {
 			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		}
+		base64 = Base64Aes.decrypt(idOrder);
+		int id = Integer.parseInt(base64);
 
 		Customer customer = cusd.getCustomerById(idCustomer);
 
-		Order order = orderDAO.getOrderById(idOrder);
+		Order order = orderDAO.getOrderById(id);
 		if (order == null || (order.getOrderStatus().getId() != 1 && order.getOrderStatus().getId() != 2)) {
 			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		} else if (order.getCustomer().getId() != idCustomer) {
 			return "redirect:/emorder/orderdetail/" + idOrder + ".htm";
 		}
 
-		List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(idOrder);
+		List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(id);
 		List<Cart> carts = cartDAO.getCartsByCustomerId(idCustomer);
 
 		if (orderDetails != null) {

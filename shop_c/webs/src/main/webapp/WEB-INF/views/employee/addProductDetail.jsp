@@ -148,8 +148,8 @@ body {
         <form action="emaddproductdetail.htm" method="POST" enctype="multipart/form-data" class="form">
        		<div style="margin-top: 15px" class="wrap">
 	        	<label for="name">Tên sản phẩm:</label>
-	            <input class="input" type="hidden" value="${product.id }" name="productId">
-	            <input type="text" id="name" value="${not empty product.name ? fn:escapeXml(product.name) : ''}" name="name" placeholder="Nhập tên sản phẩm" required>
+	            <input class="input" type="hidden" value="${encrypt }" name="productId">
+	            <input type="text" id="name" value="${fn:escapeXml(not empty product.name ? fn:escapeXml(product.name) : '')}" name="name" placeholder="Nhập tên sản phẩm" required>
         	</div>
             
             <div style="margin-top: 15px" class="wrap">

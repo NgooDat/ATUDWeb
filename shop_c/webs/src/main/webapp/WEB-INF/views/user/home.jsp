@@ -93,11 +93,11 @@
                       <!--/product_regular_price-->
                     </div>
                   </div><!--/product_price-->
-                  <form action="productinfo.htm" method="post">
-                  	<input type = "hidden" name ="proid" value ="${product[0]}">
-	                   <button
-	                    class="u-btn u-btn-round u-button-style u-radius u-btn-1">Xem chi tiết </button>
-                  </form>
+                  
+                  	<a href="productinfo.htm?proid=${product[4]}"  
+	                   
+	                    class="u-btn u-btn-round u-button-style u-radius u-btn-1">Xem chi tiết </a>
+                  
                  
                 </div>
               </div>

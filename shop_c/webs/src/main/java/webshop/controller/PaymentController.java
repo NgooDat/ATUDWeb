@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 //import java.util.Calendar;
 //import java.util.Collections;
 import java.util.Date;
@@ -65,6 +66,8 @@ import webshop.paymentMethod.VNPayConfig;
 import webshop.paymentMethod.VNPayService;
 //import webshop.paymentMethod.ZaloPayConfig;
 import webshop.paymentMethod.ZaloPayService;
+import webshop.security.Base64Aes;
+
 import org.apache.commons.text.StringEscapeUtils;
 
 @Controller
@@ -89,6 +92,8 @@ public class PaymentController {
 	@Autowired
 	OrderStatusDAO orderStatusDAO;
 
+	private String base64 = "";
+	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String perform(HttpSession session, ModelMap model) {
 		String email = (String) session.getAttribute("user");
@@ -218,7 +223,7 @@ public class PaymentController {
 	@RequestMapping(value = "result", method = RequestMethod.POST)
 	public String cash(@RequestParam("phone") String phone, @RequestParam("name") String name,
 			@RequestParam("address") String address, @RequestParam("note") String note,
-			@RequestParam("paymentMethod") int paymentMethod, Model model, HttpSession session) {
+			@RequestParam("paymentMethod") int paymentMethod, Model model, HttpSession session) throws Exception {
 		String email = (String) session.getAttribute("user");
 		Account account = accountDAO.getAccountByEmail(email);
 		Customer customer = customerDAO.getCustomerByAccountID(account.getId());
@@ -302,7 +307,12 @@ public class PaymentController {
 
 		session.removeAttribute("selectIdCarts");
 
-		session.setAttribute("idOrderResult", order.getId());
+		base64 = Base64Aes.encrypt(Integer.toString(order.getId()));
+		
+		// Khởi tạo Map để lưu các tham số
+		model.addAttribute("message", "Đặt hàng thành công!!!");
+
+		session.setAttribute("idOrderResult", base64);
 
 		return "redirect:/payment/result.htm";
 	}
@@ -389,12 +399,12 @@ public class PaymentController {
 	}
 
 	@RequestMapping(value = "result", method = RequestMethod.GET)
-	public String vnpay(HttpServletRequest request, Model model, HttpSession session) {
-		Integer idOrderResult = (Integer) session.getAttribute("idOrderResult");
-		if (idOrderResult == null) {
+	public String vnpay(HttpServletRequest request, Model model, HttpSession session) throws Exception {
+		if (session.getAttribute("idOrderResult") == null) {
 			return "redirect:/home.htm";
 		}
-		// Khởi tạo Map để lưu các tham số
+		String idOrderResult = (String) session.getAttribute("idOrderResult");
+
 		model.addAttribute("message", "Đặt hàng thành công!!!");
 		model.addAttribute("idOrderResult", idOrderResult);
 
@@ -658,7 +668,7 @@ public class PaymentController {
 
 	@RequestMapping(value = "{idOrder}", method = RequestMethod.GET)
 	public String repayment(@RequestParam("idPaymentMethod") Integer idPaymentMethod,
-			@PathVariable("idOrder") Integer idOrder, HttpSession session, HttpServletRequest request, Model model) {
+			@PathVariable("idOrder") String idOrder, HttpSession session, HttpServletRequest request, Model model) throws Exception {
 
 		String email = (String) session.getAttribute("user");
 		if (email == null) {
@@ -667,7 +677,9 @@ public class PaymentController {
 		if (idOrder == null || idPaymentMethod == null) {
 			return "redirect:/home.htm";
 		}
-		Order order = orderDAO.getOrderById(idOrder);
+		base64 = Base64Aes.decrypt(idOrder);
+		int id  = Integer.parseInt(base64);
+		Order order = orderDAO.getOrderById(id);
 		PaymentMethod paymentMethod = paymentMethodDAO.getPaymentMethodById(idPaymentMethod);
 		if (order == null || (order.getOrderStatus().getId() != 1 && order.getOrderStatus().getId() != 2
 				&& order.getPaymentStatus() == 1) || paymentMethod == null) {
@@ -695,12 +707,14 @@ public class PaymentController {
 	@RequestMapping(value = "result/vnpay", method = RequestMethod.GET)
 	public String vnpay(@RequestParam("vnp_Amount") double vnp_Amount,
 			@RequestParam("vnp_TransactionStatus") String vnp_TransactionStatus, HttpServletRequest request,
-			Model model, HttpSession session) {
+			Model model, HttpSession session) throws Exception {
 		
 		if (session.getAttribute("newOrderId") == null) {
 			return "redirect:/home.htm";
 		}
 		Integer newOrderId = (int) session.getAttribute("newOrderId");
+		String id = Integer.toString(newOrderId);
+		id = Base64Aes.encrypt(id);
 		
 		// Khởi tạo Map để lưu các tham số
 		Map<String, String> fields = new HashMap<>();
@@ -753,7 +767,7 @@ public class PaymentController {
 			model.addAttribute("message", "Lỗi xác thực chữ ký!");
 		}
 
-		model.addAttribute("newOrderId", newOrderId);
+		model.addAttribute("newOrderId", id);
 		session.removeAttribute("newOrderId");
 
 		return "payment/result"; // Trả về trang kết quả

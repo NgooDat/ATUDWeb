@@ -129,11 +129,11 @@
                     </div>
                   </div><!--/product_price-->
                   <div style="display: flex; justify-content: center">
-	                  <a href ="emproductinfo.htm?proid=${product[0] }" style="margin-right:4px;"
+	                  <a href ="emproductinfo.htm?proid=${product[4] }" style="margin-right:4px;"
 	                    class="u-btn u-btn-round u-button-style u-radius u-btn-1">Xem chi tiết </a>
 	                    
 	                  
-	                    <a onclick="confirmDelete(event, '${product[0]}')" href ="emdelprod.htm?productid=${product[0] }" style="margin-right:4px;"
+	                    <a onclick="confirmDelete(event, '${product[0]}')" href ="emdelprod.htm?productid=${product[4] }" style="margin-right:4px;"
 	                    class="u-btn u-btn-round u-button-style u-radius u-btn-1">Xóa </a>
                   
                   </div>

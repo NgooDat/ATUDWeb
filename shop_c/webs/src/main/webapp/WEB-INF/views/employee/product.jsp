@@ -199,8 +199,8 @@
 									</style>
 
 								</div>
-
-								<a href="updateprod.htm?productId=${product.id }"
+								<form>
+								<a href="updateprod.htm?productId=${encrypt }"
 									class="u-btn u-btn-round u-button-style u-radius u-block" class="u-border-none u-btn u-btn-round u-button-style u-palette-4-dark-1 u-radius u-block-control u-block-60d2-15"
 									style="background-image: none; --radius: 20px; box-shadow: 0px 0px 8px 0px rgba(var(--grey-50-r), var(--grey-50-g), var(--grey-50-b), 1); margin-top: 15.4064px; margin-right: auto; margin-bottom: 0px; margin-left: 31px; padding-top: 0px; padding-right: 20px; padding-bottom: 0px; padding-left: 19px"
 									data-block="25" data-block-type="Button" onclick="addToCart()">
@@ -209,7 +209,7 @@
 										data-block="26" data-block-type="Icon"> <img src="/b9e86569af7a8/3594363.png"
 											alt="" data-original-src="/b9e86569af7a8/3594363.png" data-color="">
 									</span> Sửa thông tin sản phẩm
-								</a><a href="emaddproductdetail.htm?productid=${product.id }"
+								</a><a href="emaddproductdetail.htm?productid=${encrypt }"
 									class="u-btn u-btn-round u-button-style u-radius u-block-control u-block-60d2-16"
 									style="--radius: 20px; box-shadow: 0px 0px 8px 0px rgba(var(--grey-50-r), var(--grey-50-g), var(--grey-50-b), 1); margin-top: -59px; margin-right: 150px; margin-bottom: 0px; margin-left: auto; padding-top: 0px; padding-bottom: 0px; padding-left: 30px; padding-right: 30px"
 									data-block="27">​<span

@@ -63,7 +63,7 @@
 					class="u-cart-products-table u-table u-table-responsive u-block-90d4-7">
 					<div class="order-info">
 						<p class="left">
-							<strong>Mã đơn hàng: </strong>${order.id}</p>
+							<strong>Mã đơn hàng: </strong>${iden}</p>
 						<p class="center">
 							<strong>Ngày tạo: </strong>
 							<fmt:formatDate value="${order.createTime}"
@@ -258,7 +258,7 @@
 												<div class="u-price"
 													style="font-weight: 700; font-size: 1rem;">
 													<a class="u-product-title-link"
-														href="productinfo.htm?proid=${orderDetail.product.id}">Xem
+														href="productinfo.htm?proid=${prodId}">Xem
 														chi tiết</a>
 												</div>
 											</div>
@@ -323,12 +323,12 @@
 										onclick="openCancelModal(${order.id})">Hủy đơn</button>
 								</div>
 							</c:when>
-							<c:when
+							<%--<c:when
 								test="${(order.orderStatus.id == 4 || order.orderStatus.id == 5) && x}">
 								<a href="payment/repurchase/${order.id}.htm"
 									class="u-btn u-btn-round u-button-style u-radius u-btn-1">Mua
 									lại</a>
-							</c:when>
+							</c:when>--%>
 							<c:when test="${order.orderStatus.id == 2}">
 								<div style="display: ruby;">
 									<c:if test="${order.paymentStatus == 0}">

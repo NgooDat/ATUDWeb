@@ -146,9 +146,10 @@ body {
 				class=" gioHang u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-custom-font u-font-ubuntu u-text u-text-default u-text-1">
 				Cập nhật thông tin sản phẩm</h2>
         <form action="updateprod.htm" method="POST" enctype="multipart/form-data" class="form">
+        
        		<div style="margin-top: 15px" class="wrap">
 	        	<label for="name">Tên sản phẩm:</label>
-	            <input class="input" type="hidden" value="${product.id }" name="productId">
+	            <input class="input" type="hidden" value="${encrypt }" name="productId">
 	            <input class="input" type="text" id="name" value="${product.name }" name="name" placeholder="Nhập tên sản phẩm" required>
         	</div>
             <div style="margin-top: 15px" class="wrap">

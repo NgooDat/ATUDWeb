@@ -37,6 +37,7 @@ import webshop.entity.OrderDetail;
 //import webshop.entity.OrderStatus;
 import webshop.entity.Product;
 import webshop.entity.ProductDetail;
+import webshop.security.Base64Aes;
 //import webshop.entity.Reason;
 
 
@@ -64,6 +65,8 @@ public class OrderController {
 	OrderStatusDAO orderStatusDAO;
 	@Autowired
 	ReasonDAO reasonDAO;
+	
+	private String base64 = "";
 
 	@RequestMapping("")
 	public String order(
@@ -72,7 +75,7 @@ public class OrderController {
 	        @RequestParam(value = "fromDate", required = false) String fromDate,
 	        @RequestParam(value = "toDate", required = false) String toDate,
 	        HttpSession session, 
-	        ModelMap model) {
+	        ModelMap model) throws Exception {
 
 	    if (session.getAttribute("user") == null) {
 	        return "redirect:/login.htm";
@@ -124,8 +127,10 @@ public class OrderController {
 	                for (OrderDetail orderDetail : orderDetails) {
 	                    totalQuantity += orderDetail.getQuantity();
 	                }
+	                base64 = Base64Aes.encrypt(Integer.toString(order.getId()));
 	                ordersMap.put("order", order);
 	                ordersMap.put("totalQuantity", totalQuantity);
+	                ordersMap.put("orderId", base64);
 	                ordersList.add(ordersMap);
 	            }
 	        }
@@ -167,7 +172,7 @@ public class OrderController {
 	}
 
 	@RequestMapping("orderdetail/{idOrder}")
-	public String orderdetail(@PathVariable("idOrder") Integer idOrder, HttpSession session, ModelMap model) {
+	public String orderdetail(@PathVariable("idOrder") String idOrder, HttpSession session, ModelMap model) throws Exception {
 		session.removeAttribute("idOrderResult");
 		
 		if (session.getAttribute("user") == null) {
@@ -175,19 +180,23 @@ public class OrderController {
 		} else if (idOrder == null) {
 			return "redirect:/order.htm";
 		}
+		
+		base64 = Base64Aes.decrypt(idOrder);
+		int id  = Integer.parseInt(base64);
 
 		String email = (String) session.getAttribute("user");
 		Account account = accountDAO.getAccountByEmail(email);
 		Customer customer = customerDAO.getCustomerByAccountID(account.getId());
 
-		Order order = orderDAO.getOrderById(idOrder);
+		Order order = orderDAO.getOrderById(id);
 		if (order == null  || order.getCustomer().getId() != customer.getId()) {
 			return "redirect:/order.htm";
 		}
 
-		List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(idOrder);
+		List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(id);
 		List<Map<String, Object>> orderDetailsList = new ArrayList<Map<String, Object>>();
-
+		String idCus = "";
+		String prodid = "";
 		if (orderDetails != null) {
 			for (OrderDetail orderDetail : orderDetails) {
 				Map<String, Object> orderDetailsMap = new HashMap<String, Object>();
@@ -197,12 +206,16 @@ public class OrderController {
 				orderDetailsMap.put("product", product);
 				orderDetailsMap.put("productDetail", productDetail);
 				orderDetailsMap.put("orderDetail", orderDetail);
+				idCus = Base64Aes.encrypt(Integer.toString(orderDetail.getOrder().getCustomer().getId()));
+				prodid = Base64Aes.encrypt(Integer.toString(product.getId()));
 				orderDetailsList.add(orderDetailsMap);
 			}
 		} else {
 			return "redirect:/order.htm";
 		}
-
+		model.addAttribute("cusId", idCus);
+		model.addAttribute("prodId", prodid);
+		model.addAttribute("iden", idOrder);
 		model.addAttribute("order", order);
 		model.addAttribute("orderDetails", orderDetailsList);
 		model.addAttribute("cancelReasons", reasonDAO.getAllReasons());
@@ -212,8 +225,8 @@ public class OrderController {
 	}
 
 	@RequestMapping("cancel/{idOrder}")
-	public String cancel(@PathVariable("idOrder") Integer idOrder, @RequestParam("IdReason") Integer IdReason,
-			HttpSession session, ModelMap model) {
+	public String cancel(@PathVariable("idOrder") String idOrder, @RequestParam("IdReason") Integer IdReason,
+			HttpSession session, ModelMap model) throws Exception {
 
 		if (session.getAttribute("user") == null) {
 			return "redirect:/login.htm";
@@ -226,13 +239,14 @@ public class OrderController {
 		String email = (String) session.getAttribute("user");
 		Account account = accountDAO.getAccountByEmail(email);
 		Customer customer = customerDAO.getCustomerByAccountID(account.getId());
-
-		Order order = orderDAO.getOrderById(idOrder);
+		base64 = Base64Aes.decrypt(idOrder);
+		int id = Integer.parseInt(base64);
+		Order order = orderDAO.getOrderById(id);
 		if (order == null || (order.getOrderStatus().getId() != 1 && order.getOrderStatus().getId() != 2) || order.getCustomer().getId() != customer.getId()) {
 			return "redirect:/order.htm";
 		}
 
-		List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(idOrder);
+		List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(id);
 		List<Cart> carts = cartDAO.getCartsByCustomerId(customer.getId());
 
 		if (orderDetails != null) {

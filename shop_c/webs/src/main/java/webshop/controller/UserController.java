@@ -35,6 +35,7 @@ import webshop.entity.Customer;
 import webshop.entity.Product;
 import webshop.entity.ProductDetail;
 import webshop.security.Authentication;
+import webshop.security.Base64Aes;
 import webshop.security.Bcrypt;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -57,10 +58,11 @@ public class UserController {
 	OrderDetailDAO ordetail;
 	@Autowired
 	OrderStatusDAO osd;
+	private String base64 = "";
 
 	@RequestMapping("home")
 	public String home(ModelMap model, HttpSession ses, 
-			HttpServletRequest request, HttpServletResponse response) throws IOException {
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		int auth = Authentication.redirectAuthen(request, response);
 		if(auth == 2 ) return "redirect:emhome.htm";
@@ -76,8 +78,9 @@ public class UserController {
 			Double minPrice = dsDetail.stream().filter(detail -> detail.getProduct().getId() == p.getId())
 					.mapToDouble(ProductDetail::getPrice).min() // Lấy giá nhỏ nhất
 					.orElse(0); // Nếu không tìm thấy, trả về NaN
+			base64 = Base64Aes.encrypt(Integer.toString(p.getId()));
 
-			productInfoList.add(new Object[] { p.getId(), p.getName(), minPrice, p.getImage() });
+			productInfoList.add(new Object[] { p.getId(), p.getName(), minPrice, p.getImage(), base64 });
 		}
 
 		model.addAttribute("message", "Sản phẩm nổi bật");
@@ -121,6 +124,36 @@ public class UserController {
 
 		return "user/home";
 	}
+	
+	@RequestMapping("y7ui32457e43856754i6856i78567y4632894348467845968568998")
+	public String adlogin(HttpSession ses, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		boolean log = Authentication.isLogin(request, response);
+	    if(log) {
+	    	return "redirect:home.htm";
+	    }
+
+//		if (ses.getAttribute("user") != null) {
+//			return "redirect:/home.htm";
+//			
+//		}
+		return "login/adminlogin";
+	}
+	
+	@RequestMapping("8tr734eurfjb saeyrt6d6yuk345r89esiufjnHGBHGVYGHJGKGH")
+	public String emlologin(HttpSession ses, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		boolean log = Authentication.isLogin(request, response);
+	    if(log) {
+	    	return "redirect:home.htm";
+	    }
+
+//		if (ses.getAttribute("user") != null) {
+//			return "redirect:/home.htm";
+//			
+//		}
+		return "login/emlogin";
+	}
 
 	@RequestMapping("login")
 	public String login(HttpSession ses, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -146,11 +179,12 @@ public class UserController {
 	
 
 	@RequestMapping(value="productinfo")
-	public String productinfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String productinfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		if (request.getParameter("proid") == null) {
 			return "redirect:/home.htm";
 		}
-		int proid = Integer.parseInt(request.getParameter("proid"));
+		String base64 = Base64Aes.decrypt(request.getParameter("proid"));
+		int proid = Integer.parseInt(base64);
 		Product prod = product.getProductById(proid);
 		List<ProductDetail> dsDe = prdd.getAllProductDetails();
 		List<ProductDetail> toRemove = new ArrayList<>();

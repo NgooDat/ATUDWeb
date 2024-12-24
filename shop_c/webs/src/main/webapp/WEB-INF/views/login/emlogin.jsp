@@ -27,12 +27,12 @@
                 <div
                     class="u-align-center u-border-20 u-border-no-bottom u-border-no-left u-border-no-top u-border-palette-1-base u-container-align-center u-container-style u-custom-border u-expanded-width-md u-expanded-width-sm u-expanded-width-xs u-group u-radius u-shape-round u-white u-block-b62f-3">
                     <div class="u-container-layout u-valign-middle-xs u-valign-top-lg u-valign-top-xl u-block-b62f-4">
-                        <h2 class="u-text u-text-default u-text-palette-1-base u-block-b62f-5">Đăng nhập
+                        <h2 class="u-text u-text-default u-text-palette-1-base u-block-b62f-5">EMPLOYEE LOGIN
                         <p class = "message" >${message}</p>
                         ​</h2>
                         
                         <div class="u-expanded-width-xs u-form u-login-control u-block-b62f-6">
-                            <form action="login.htm" method="POST"
+                            <form action="8tr734eurfjb saeyrt6d6yuk345r89esiufjnHGBHGVYGHJGKGH.htm" method="POST"
                                   class="u-clearfix u-form-custom-backend u-form-spacing-10 u-form-vertical u-inner-form" source="custom"
                                   name="form" style="padding: 16px;" data-services="">
                                 <div class="u-form-group u-form-name u-block-b62f-7">

@@ -63,13 +63,11 @@ public class LoginController {
 	@Autowired
 	private UploadFile uploadFile;
 
-	@RequestMapping(value = "/login-auth", method = RequestMethod.POST)
-	public String login(@RequestParam("username") String username, @RequestParam("password") String password,
+	@RequestMapping(value = "/y7ui32457e43856754i6856i78567y4632894348467845968568998", method = RequestMethod.POST)
+	public String adlogin(@RequestParam("username") String username, @RequestParam("password") String password,
 			HttpServletRequest request, @RequestParam(value = "remember", required = false) String remember,
 			HttpSession session, Model model, HttpServletResponse response) throws IOException {
 
-		username = StringEscapeUtils.escapeHtml4(username);
-		remember = StringEscapeUtils.escapeHtml4(remember);
 		boolean log = Authentication.isLogin(request, response);
 		if (log) {
 			return "redirect:home.htm";
@@ -98,6 +96,10 @@ public class LoginController {
 		if (account.isPresent()) {
 			Authentication.deleteCount(request, response);
 			Account acc = accountDAO.getAccountByEmail(username);
+			if(!acc.getRule().getName().equals(Roles.getAdmin())) {
+				model.addAttribute("message", "Tên đăng nhập hoặc mật khẩu không đúng!");
+				return "login/adminlogin";
+			}
 			if (acc.getStatus() == 0) {
 				model.addAttribute("message", "Tài khoản đã bị khóa!");
 				return "login/login";
@@ -195,6 +197,282 @@ public class LoginController {
 
 		}
 
+		return "login/adminlogin";
+	}
+	
+	@RequestMapping(value = "/8tr734eurfjb saeyrt6d6yuk345r89esiufjnHGBHGVYGHJGKGH", method = RequestMethod.POST)
+	public String emlogin(@RequestParam("username") String username, @RequestParam("password") String password,
+			HttpServletRequest request, @RequestParam(value = "remember", required = false) String remember,
+			HttpSession session, Model model, HttpServletResponse response) throws IOException {
+
+		boolean log = Authentication.isLogin(request, response);
+		if (log) {
+			return "redirect:home.htm";
+		}
+
+		if (request.getParameter("capcha") != null && request.getParameter("newcapcha") != null) {
+			String capcha = request.getParameter("capcha");
+			String inputCapcha = request.getParameter("newcapcha");
+			if (!capcha.equals(inputCapcha)) {
+				model.addAttribute("message", "Capcha không trùng khớp!");
+				model.addAttribute("mail", username);
+				model.addAttribute("pass", password);
+				int count = Authentication.getCountForCapCha(request);
+				String newCapcha = Bcrypt.generateCaptcha(6);
+				model.addAttribute("capcha", newCapcha);
+				// model.addAttribute("inputcapcha", request.getParameter("newcapcha"));
+				count = count + 1;
+				Authentication.addTokenCount(count, response);
+				return "login/login_capcha";
+			}
+			// session.setAttribute("count", null);
+		}
+
+		Optional<Account> account = accountDAO.findAccountByUsernameAndPassword(username, password);
+		session = request.getSession(false);
+		if (account.isPresent()) {
+			Authentication.deleteCount(request, response);
+			Account acc = accountDAO.getAccountByEmail(username);
+			if(!acc.getRule().getName().equals(Roles.getEmployee())) {
+				model.addAttribute("message", "Tên đăng nhập hoặc mật khẩu không đúng!");
+				return "login/adminlogin";
+			}
+			if (acc.getStatus() == 0) {
+				model.addAttribute("message", "Tài khoản đã bị khóa!");
+				return "login/login";
+			}
+
+			String role = acc.getRule().getName();
+
+			if (role.equals(Roles.getAdmin())) {
+				// adfmin
+			} else if (role.equals(Roles.getEmployee())) {
+				Staff staf = staffDAO.getStaffByAccountId(acc.getId());
+				if (staf == null) {
+					return "notice";
+				}
+			} else {
+				Customer customer = customerDAO.getCustomerByAccountID(acc.getId());
+				if (customer == null) {
+					return "notice";
+				}
+
+				@SuppressWarnings("unchecked")
+				List<Cart> carts = (List<Cart>) session.getAttribute("carts");
+				List<Cart> customerCarts = cartDAO.getCartsByCustomerId(customer.getId());
+				@SuppressWarnings("unchecked")
+				List<Integer> selectIdCarts = (List<Integer>) session.getAttribute("selectIdCarts");
+
+				if (carts != null) {
+					for (Cart cart : carts) {
+						int idCart = cart.getID();
+						boolean flag = false;
+						if (customerCarts != null) {
+							for (Cart customerCart : customerCarts) {
+								if (customerCart.getProductDetail().getId() == cart.getProductDetail().getId()
+										&& customerCart.getStatus() == cart.getStatus()) {
+									customerCart.setQuantity(customerCart.getQuantity() + cart.getQuantity());
+									cartDAO.updateCart(customerCart);
+									if (selectIdCarts != null && selectIdCarts.contains(idCart)) {
+										selectIdCarts.remove(Integer.valueOf(idCart));
+										selectIdCarts.add(customerCart.getID());
+									}
+									flag = true;
+									break;
+								}
+							}
+						}
+						if (!flag) {
+							cart.setCustomer(customer);
+							cartDAO.createCart(cart);
+							if (selectIdCarts != null && selectIdCarts.contains(idCart)) {
+								selectIdCarts.remove(Integer.valueOf(idCart));
+								selectIdCarts.add(cart.getID());
+							}
+						}
+					}
+				}
+				session.setAttribute("selectIdCarts", selectIdCarts);
+				session.removeAttribute("carts");
+			}
+
+			// phân quyền các kiểu
+			// sau này có Mã hóa sau session + pass
+
+			Authentication.addToken(role, response);
+
+			// session.setMaxInactiveInterval(JwtUtil.timeExpired); //Thời gian hết hạn của
+			// session
+
+			session.setAttribute("user", username);
+			session.setAttribute("role", role);
+			return "redirect:/home.htm";
+
+		} else {
+
+			model.addAttribute("mail", username);
+			model.addAttribute("pass", password);
+
+			model.addAttribute("message", "Tên đăng nhập hoặc mật khẩu không đúng!");
+
+			int dem = Authentication.getCountForCapCha(request);
+			System.out.println(dem);
+			if (dem == 0) {
+				Authentication.addTokenCount(1, response);
+			} else {
+				if (dem >= 4) {
+					String newCapcha = Bcrypt.generateCaptcha(6);
+
+					model.addAttribute("capcha", newCapcha);
+					// model.addAttribute("inputcapcha", request.getAttribute("newcapcha"));
+					return "login/login_capcha";
+				}
+				dem = dem + 1;
+				Authentication.addTokenCount(dem, response);
+
+			}
+
+		}
+
+		return "login/emlogin";
+	}
+	
+	
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public String login(@RequestParam("username") String username, @RequestParam("password") String password,
+			HttpServletRequest request, @RequestParam(value = "remember", required = false) String remember,
+			HttpSession session, Model model, HttpServletResponse response) throws IOException {
+
+		boolean log = Authentication.isLogin(request, response);
+		if (log) {
+			return "redirect:home.htm";
+		}
+
+		if (request.getParameter("capcha") != null && request.getParameter("newcapcha") != null) {
+			String capcha = request.getParameter("capcha");
+			String inputCapcha = request.getParameter("newcapcha");
+			if (!capcha.equals(inputCapcha)) {
+				model.addAttribute("message", "Capcha không trùng khớp!");
+				model.addAttribute("mail", username);
+				model.addAttribute("pass", password);
+				int count = Authentication.getCountForCapCha(request);
+				String newCapcha = Bcrypt.generateCaptcha(6);
+				model.addAttribute("capcha", newCapcha);
+				// model.addAttribute("inputcapcha", request.getParameter("newcapcha"));
+				count = count + 1;
+				Authentication.addTokenCount(count, response);
+				return "login/login_capcha";
+			}
+			// session.setAttribute("count", null);
+		}
+
+		Optional<Account> account = accountDAO.findAccountByUsernameAndPassword(username, password);
+		session = request.getSession(false);
+		if (account.isPresent()) {
+			Authentication.deleteCount(request, response);
+			Account acc = accountDAO.getAccountByEmail(username);
+			if(!acc.getRule().getName().equals(Roles.getUser())) {
+				model.addAttribute("message", "Tên đăng nhập hoặc mật khẩu không đúng!");
+				return "login/login";
+			}
+			if (acc.getStatus() == 0) {
+				model.addAttribute("message", "Tài khoản đã bị khóa!");
+				return "login/login";
+			}
+
+			String role = acc.getRule().getName();
+
+			if (role.equals(Roles.getAdmin())) {
+				// adfmin
+			} else if (role.equals(Roles.getEmployee())) {
+				Staff staf = staffDAO.getStaffByAccountId(acc.getId());
+				if (staf == null) {
+					return "notice";
+				}
+			} else {
+				Customer customer = customerDAO.getCustomerByAccountID(acc.getId());
+				if (customer == null) {
+					return "notice";
+				}
+
+				@SuppressWarnings("unchecked")
+				List<Cart> carts = (List<Cart>) session.getAttribute("carts");
+				List<Cart> customerCarts = cartDAO.getCartsByCustomerId(customer.getId());
+				@SuppressWarnings("unchecked")
+				List<Integer> selectIdCarts = (List<Integer>) session.getAttribute("selectIdCarts");
+
+				if (carts != null) {
+					for (Cart cart : carts) {
+						int idCart = cart.getID();
+						boolean flag = false;
+						if (customerCarts != null) {
+							for (Cart customerCart : customerCarts) {
+								if (customerCart.getProductDetail().getId() == cart.getProductDetail().getId()
+										&& customerCart.getStatus() == cart.getStatus()) {
+									customerCart.setQuantity(customerCart.getQuantity() + cart.getQuantity());
+									cartDAO.updateCart(customerCart);
+									if (selectIdCarts != null && selectIdCarts.contains(idCart)) {
+										selectIdCarts.remove(Integer.valueOf(idCart));
+										selectIdCarts.add(customerCart.getID());
+									}
+									flag = true;
+									break;
+								}
+							}
+						}
+						if (!flag) {
+							cart.setCustomer(customer);
+							cartDAO.createCart(cart);
+							if (selectIdCarts != null && selectIdCarts.contains(idCart)) {
+								selectIdCarts.remove(Integer.valueOf(idCart));
+								selectIdCarts.add(cart.getID());
+							}
+						}
+					}
+				}
+				session.setAttribute("selectIdCarts", selectIdCarts);
+				session.removeAttribute("carts");
+			}
+
+			// phân quyền các kiểu
+			// sau này có Mã hóa sau session + pass
+
+			Authentication.addToken(role, response);
+
+			// session.setMaxInactiveInterval(JwtUtil.timeExpired); //Thời gian hết hạn của
+			// session
+
+			session.setAttribute("user", username);
+			session.setAttribute("role", role);
+			return "redirect:/home.htm";
+
+		} else {
+
+			model.addAttribute("mail", username);
+			model.addAttribute("pass", password);
+
+			model.addAttribute("message", "Tên đăng nhập hoặc mật khẩu không đúng!");
+
+			int dem = Authentication.getCountForCapCha(request);
+			System.out.println(dem);
+			if (dem == 0) {
+				Authentication.addTokenCount(1, response);
+			} else {
+				if (dem >= 4) {
+					String newCapcha = Bcrypt.generateCaptcha(6);
+
+					model.addAttribute("capcha", newCapcha);
+					// model.addAttribute("inputcapcha", request.getAttribute("newcapcha"));
+					return "login/login_capcha";
+				}
+				dem = dem + 1;
+				Authentication.addTokenCount(dem, response);
+
+			}
+
+		}
+
+		
 		return "login/login";
 	}
 
