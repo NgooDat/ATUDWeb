@@ -154,7 +154,7 @@ public class EmployeeController {
 
 	@RequestMapping("empersonal")
 	public String personal(HttpServletRequest request, HttpSession session, HttpServletResponse response)
-			throws IOException {
+			throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 
@@ -169,11 +169,13 @@ public class EmployeeController {
 
 		if (acc != null) {
 			cs = stafd.getStaffByAccountId(acc.getId());
+			acc.setEmail(Base64Aes.decrypt(email));
 		}
 
 		if (cs != null) {
 			request.setAttribute("acc", acc);
 			request.setAttribute("personal", cs);
+			cs.setPhone(Base64Aes.decrypt(cs.getPhone()));
 		} else {
 			return "redirect:error.htm";
 		}
@@ -184,7 +186,7 @@ public class EmployeeController {
 	@RequestMapping(value = "updateinfo", method = RequestMethod.POST)
 	public String abcdef(@RequestParam("id") int staffId, @RequestParam("name") String name,
 			@RequestParam("phone") String phone, @RequestParam("address") String address, ModelMap model,
-			HttpServletRequest request, HttpServletResponse response) throws IOException {
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		int auth = Authentication.redirectAuthen(request, response);
 		name = StringEscapeUtils.escapeHtml4(name);
@@ -204,7 +206,7 @@ public class EmployeeController {
 
 		// Cập nhật thông tin nhân viên
 		staff.setName(name);
-		staff.setPhone(phone);
+		staff.setPhone(Base64Aes.encrypt(phone));
 		staff.setAddress(address);
 
 		// Cập nhật trạng thái tài khoản
@@ -227,7 +229,7 @@ public class EmployeeController {
 		model.addAttribute("acc", account);
 
 		model.addAttribute("staff", staff);
-		return "employee/personal";
+		return "redirect:empersonal.htm";
 	}
 
 	@RequestMapping("emsearch")

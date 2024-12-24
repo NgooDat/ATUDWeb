@@ -33,7 +33,7 @@
 <section class="u-clearfix u-section-1" id="sec-4712">
   <div class="wrap u-clearfix u-sheet u-sheet-1">
     <div class="wrap2 u-form u-form-1">
-      <form action="update-profile.htm" method="post" enctype="multipart/form-data" class="wrap3 u-clearfix u-form-spacing-10 u-form-vertical u-inner-form" source="email" name="form" style="padding: 10px; display: flex; justify-content: space-between; align-items: flex-start;">
+      <form action="updateProfile.htm" method="post" enctype="multipart/form-data" class="wrap3 u-clearfix u-form-spacing-10 u-form-vertical u-inner-form" source="email" name="form" style="padding: 10px; display: flex; justify-content: space-between; align-items: flex-start;">
 
         <!-- Hiển thị ảnh đại diện bên trái -->
         <div class="image-container">

@@ -201,7 +201,7 @@ public class UserController {
 
 	@RequestMapping("personal")
 	public String personal(HttpServletRequest request, HttpSession session,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response) throws Exception {
 		
 		boolean log = Authentication.isLogin(request, response);
 	    if(!log) {
@@ -210,14 +210,17 @@ public class UserController {
 		String email = (String) session.getAttribute("user");
 
 		Account acc = accd.getAccountByEmail(email);
+		
 
 		Customer cs = null;
 
 		if (acc != null) {
 			cs = cusd.getCustomerByAccountID(acc.getId());
+			acc.setEmail(Base64Aes.decrypt(email));
 		}
 
 		if (cs != null) {
+			cs.setPhone(Base64Aes.decrypt(cs.getPhone()));
 			request.setAttribute("acc", acc);
 			request.setAttribute("personal", cs);
 		}else {
@@ -235,7 +238,7 @@ public class UserController {
 	    @RequestParam(value = "file", required = false) MultipartFile file,
 	    HttpSession session,
 	    HttpServletRequest request,
-	    HttpServletResponse response) throws IOException
+	    HttpServletResponse response) throws Exception
 	 {
 		name = StringEscapeUtils.escapeHtml4(name);
 	    phone = StringEscapeUtils.escapeHtml4(phone);
@@ -266,14 +269,15 @@ public class UserController {
 
 	    // Cập nhật thông tin
 	    customer.setName(name);
-	    customer.setPhone(phone);
-	    acc.setEmail(email);
+	    customer.setPhone(Base64Aes.encrypt(phone));
+	    acc.setEmail(Base64Aes.encrypt(email));
 
 	    // Xử lý upload ảnh (nếu có)
 	    if (file != null && !file.isEmpty()) {
 	        try {
 	        	String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
 	            String fileName = timestamp + file.getOriginalFilename();
+	            System.out.println(fileName);
 	            String uploadDir = request.getServletContext().getRealPath("/images/avatar/");
 	            File uploadFile = new File(uploadDir, fileName);
 	            file.transferTo(uploadFile);
@@ -292,7 +296,7 @@ public class UserController {
 
 	    // Gửi thông báo thành công
 	    request.setAttribute("successMessage", "Cập nhật thông tin thành công!");
-	    return "redirect:/personal";
+	    return "redirect:/personal.htm";
 	}
 	
 	@RequestMapping(value = "resetpass", method = RequestMethod.POST)

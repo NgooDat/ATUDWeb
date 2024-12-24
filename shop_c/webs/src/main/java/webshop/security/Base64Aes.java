@@ -4,15 +4,16 @@ package webshop.security;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Base64Aes {
-	private static final char[] CUSTOM_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".toCharArray();
-
-    private static SecretKey key;
+	private static final char[] CUSTOM_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_@.".toCharArray();
+    private static final String FIXED_KEY = "MyFixedSecretKey"; // Khóa cố định 16 ký tự
+    private static final SecretKeySpec key;
 
     static {
         try {
-            key = generateKey();
+            key = new SecretKeySpec(FIXED_KEY.getBytes("UTF-8"), "AES");
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize secret key", e);
         }

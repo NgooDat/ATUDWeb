@@ -32,7 +32,7 @@
                         ​</h2>
                         
                         <div class="u-expanded-width-xs u-form u-login-control u-block-b62f-6">
-                            <form action="login-auth.htm" method="POST"
+                            <form action="login.htm" method="POST"
                                   class="u-clearfix u-form-custom-backend u-form-spacing-10 u-form-vertical u-inner-form" source="custom"
                                   name="form" style="padding: 16px;" data-services="">
                                 <div class="u-form-group u-form-name u-block-b62f-7">

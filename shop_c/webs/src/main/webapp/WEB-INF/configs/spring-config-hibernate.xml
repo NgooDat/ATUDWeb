@@ -22,8 +22,38 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="sa"
-			p:password="123">
+			p:username="admin_rule"
+			p:password="Fl0r3nt!n@">
+	</bean>
+	<bean id="employeeSource" 
+	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
+			p:username="staff_rule"
+			p:password="@hB3qu0!O">
+	</bean>
+	<bean id="userSource" 
+	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
+			p:username="customer_rule"
+			p:password="D0@ntu34yN7gd!">
+	</bean>
+	
+	<bean id="guestSource" 
+	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
+			p:username="customer_rule"
+			p:password="D0@ntu34yN7gd!">
+	</bean>
+	
+	<bean id="accountSource" 
+	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
+			p:username="acc_rule"
+			p:password="D0@ntu34yN7gd!">
 	</bean>
 	
 	<!-- Cấu hình Hibernate -->
@@ -46,14 +76,7 @@
 	    <property name="sessionFactory" ref="adminSessionFactory"/>
 	</bean>
 	
-	<!-- Kết nối CSDL -->
-	<bean id="employeeSource" 
-	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
-			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="admin_rule"
-			p:password="Fl0r3nt!n@">
-	</bean>
+	
 	
 	<bean id="employeeSessionFactory" 
       class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
@@ -75,13 +98,7 @@
 	</bean>
 	
 	<!-- Kết nối CSDL -->
-	<bean id="guestSource" 
-	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
-			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="staff_rule"
-			p:password="@hB3qu0!O">
-	</bean>
+	
 	
 	<bean id="guestSessionFactory" 
       class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
@@ -101,14 +118,7 @@
 	    <property name="sessionFactory" ref="guestSessionFactory"/>
 	</bean>
 	
-	<!-- Kết nối CSDL -->
-	<bean id="userSource" 
-	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
-			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="customer_rule"
-			p:password="D0@ntu34yN7gd!">
-	</bean>
+	
 	
 	<bean id="userSessionFactory" 
       class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  <!-- Thay đổi từ hibernate4 sang hibernate5 -->
@@ -130,13 +140,7 @@
 	</bean>
 	
 	<!-- Kết nối CSDL -->
-	<bean id="accountSource" 
-	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
-			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="visitor_rule"
-			p:password="1Nt3rte!1aC0u^c!1">
-	</bean>
+	
 
 	
 	

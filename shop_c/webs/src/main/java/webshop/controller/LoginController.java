@@ -27,6 +27,7 @@ import webshop.entity.Rule;
 import webshop.entity.Staff;
 //import webshop.entity.Type;
 import webshop.security.Authentication;
+import webshop.security.Base64Aes;
 import webshop.security.Bcrypt;
 import webshop.security.Email;
 //import webshop.security.JwtUtil;
@@ -66,17 +67,18 @@ public class LoginController {
 	@RequestMapping(value = "/y7ui32457e43856754i6856i78567y4632894348467845968568998", method = RequestMethod.POST)
 	public String adlogin(@RequestParam("username") String username, @RequestParam("password") String password,
 			HttpServletRequest request, @RequestParam(value = "remember", required = false) String remember,
-			HttpSession session, Model model, HttpServletResponse response) throws IOException {
+			HttpSession session, Model model, HttpServletResponse response) throws Exception {
 
 		boolean log = Authentication.isLogin(request, response);
 		if (log) {
 			return "redirect:home.htm";
 		}
-
+		
 		if (request.getParameter("capcha") != null && request.getParameter("newcapcha") != null) {
 			String capcha = request.getParameter("capcha");
 			String inputCapcha = request.getParameter("newcapcha");
 			if (!capcha.equals(inputCapcha)) {
+				username = Base64Aes.decrypt(username);
 				model.addAttribute("message", "Capcha không trùng khớp!");
 				model.addAttribute("mail", username);
 				model.addAttribute("pass", password);
@@ -90,7 +92,7 @@ public class LoginController {
 			}
 			// session.setAttribute("count", null);
 		}
-
+		username = Base64Aes.encrypt(username);
 		Optional<Account> account = accountDAO.findAccountByUsernameAndPassword(username, password);
 		session = request.getSession(false);
 		if (account.isPresent()) {
@@ -173,6 +175,7 @@ public class LoginController {
 
 		} else {
 
+			username = Base64Aes.decrypt(username);
 			model.addAttribute("mail", username);
 			model.addAttribute("pass", password);
 
@@ -203,7 +206,7 @@ public class LoginController {
 	@RequestMapping(value = "/8tr734eurfjb saeyrt6d6yuk345r89esiufjnHGBHGVYGHJGKGH", method = RequestMethod.POST)
 	public String emlogin(@RequestParam("username") String username, @RequestParam("password") String password,
 			HttpServletRequest request, @RequestParam(value = "remember", required = false) String remember,
-			HttpSession session, Model model, HttpServletResponse response) throws IOException {
+			HttpSession session, Model model, HttpServletResponse response) throws Exception {
 
 		boolean log = Authentication.isLogin(request, response);
 		if (log) {
@@ -215,6 +218,7 @@ public class LoginController {
 			String inputCapcha = request.getParameter("newcapcha");
 			if (!capcha.equals(inputCapcha)) {
 				model.addAttribute("message", "Capcha không trùng khớp!");
+				username = Base64Aes.decrypt(username);
 				model.addAttribute("mail", username);
 				model.addAttribute("pass", password);
 				int count = Authentication.getCountForCapCha(request);
@@ -228,6 +232,7 @@ public class LoginController {
 			// session.setAttribute("count", null);
 		}
 
+		username = Base64Aes.encrypt(username);
 		Optional<Account> account = accountDAO.findAccountByUsernameAndPassword(username, password);
 		session = request.getSession(false);
 		if (account.isPresent()) {
@@ -310,6 +315,7 @@ public class LoginController {
 
 		} else {
 
+			username = Base64Aes.decrypt(username);
 			model.addAttribute("mail", username);
 			model.addAttribute("pass", password);
 
@@ -341,7 +347,7 @@ public class LoginController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login(@RequestParam("username") String username, @RequestParam("password") String password,
 			HttpServletRequest request, @RequestParam(value = "remember", required = false) String remember,
-			HttpSession session, Model model, HttpServletResponse response) throws IOException {
+			HttpSession session, Model model, HttpServletResponse response) throws Exception {
 
 		boolean log = Authentication.isLogin(request, response);
 		if (log) {
@@ -353,6 +359,7 @@ public class LoginController {
 			String inputCapcha = request.getParameter("newcapcha");
 			if (!capcha.equals(inputCapcha)) {
 				model.addAttribute("message", "Capcha không trùng khớp!");
+				username = Base64Aes.decrypt(username);
 				model.addAttribute("mail", username);
 				model.addAttribute("pass", password);
 				int count = Authentication.getCountForCapCha(request);
@@ -365,6 +372,7 @@ public class LoginController {
 			}
 			// session.setAttribute("count", null);
 		}
+		username = Base64Aes.encrypt(username);
 
 		Optional<Account> account = accountDAO.findAccountByUsernameAndPassword(username, password);
 		session = request.getSession(false);
@@ -447,7 +455,7 @@ public class LoginController {
 			return "redirect:/home.htm";
 
 		} else {
-
+			username = Base64Aes.decrypt(username);
 			model.addAttribute("mail", username);
 			model.addAttribute("pass", password);
 
