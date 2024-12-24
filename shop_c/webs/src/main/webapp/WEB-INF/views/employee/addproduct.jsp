@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -148,7 +148,7 @@ body {
         <form action="emaddproduct.htm" method="POST" enctype="multipart/form-data" class="form">
         	<div class="wrap">
 	        	<label for="name">Tên sản phẩm:</label>
-	            <input class="input" type="text" id="name" name="name" value="${fn:escapeXml(param.name)}" placeholder="Nhập tên sản phẩm" required>
+	            <input class="input" type="text" id="name" name="name" value="${param.name}" placeholder="Nhập tên sản phẩm" required>
         	</div>
   
             <div class="wrap">
@@ -162,7 +162,7 @@ body {
 	                <option value="" disabled selected>Chọn loại sản phẩm</option>
 	                <c:if test="${not empty types}">
 	                    <c:forEach var="type" items="${types}">
-	                        <option value="${fn:escapeXml(type.id)}">${fn:escapeXml(type.name)}</option>
+	                        <option value="${type.id}">${type.name}</option>
 	                    </c:forEach>
 	                </c:if>
 	            </select>
@@ -173,7 +173,7 @@ body {
 	                <option value="" disabled selected>Chọn xuất xứ</option>
 	                <c:if test="${not empty origins}">
 	                    <c:forEach var="origin" items="${origins}">
-	                        <option value="${fn:escapeXml(origin.id)}">${fn:escapeXml(origin.name)}</option>
+	                        <option value="${origin.id}">${origin.name}</option>
 	                    </c:forEach>
 	                </c:if>
 	            </select>
@@ -185,7 +185,7 @@ body {
 	                <option value="" disabled selected>Chọn thương hiệu</option>
 	                <c:if test="${not empty brands}">
 	                    <c:forEach var="brand" items="${brands}">
-	                        <option value="${fn:escapeXml(brand.id)}">${fn:escapeXml(brand.name)}</option>
+	                        <option value="${brand.id}">${brand.name}</option>
 	                    </c:forEach>
 	                </c:if>
 	            </select>
@@ -197,7 +197,7 @@ body {
 	                <option value="" disabled selected>Chọn chất liệu</option>
 	                <c:if test="${not empty materials}">
 	                    <c:forEach var="material" items="${materials}">
-	                        <option value="${fn:escapeXml(material.id)}">${fn:escapeXml(material.name)}</option>
+	                        <option value="${material.id}">${material.name}</option>
 	                    </c:forEach>
 	                </c:if>
 	            </select>

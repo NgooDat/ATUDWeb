@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -90,7 +90,7 @@
             <option value="" disabled selected>Chọn loại sản phẩm</option>
             <c:if test="${not empty types}">
                 <c:forEach var="type" items="${types}">
-                    <option value="${type.id}">${fn:escapeXml(type.name)}</option>
+                    <option value="${type.id}">${type.name}</option>
                 </c:forEach>
             </c:if>
         </select>
@@ -100,7 +100,7 @@
             <option value="" disabled selected>Chọn xuất xứ</option>
             <c:if test="${not empty origins}">
                 <c:forEach var="origin" items="${origins}">
-                    <option value="${origin.id}">${fn:escapeXml(origin.name)}</option>
+                    <option value="${origin.id}">${origin.name}</option>
                 </c:forEach>
             </c:if>
         </select>
@@ -110,7 +110,7 @@
             <option value="" disabled selected>Chọn thương hiệu</option>
             <c:if test="${not empty brands}">
                 <c:forEach var="brand" items="${brands}">
-                    <option value="${brand.id}">${fn:escapeXml(brand.name)}</option>
+                    <option value="${brand.id}">${brand.name}</option>
                 </c:forEach>
             </c:if>
         </select>
@@ -120,7 +120,7 @@
             <option value="" disabled selected>Chọn chất liệu</option>
             <c:if test="${not empty materials}">
                 <c:forEach var="material" items="${materials}">
-                    <option value="${material.id}">${fn:escapeXml(material.name)}</option>
+                    <option value="${material.id}">${material.name}</option>
                 </c:forEach>
             </c:if>
         </select>

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
 <!DOCTYPE html>
 <html style="font-size: 16px;">
 
@@ -66,12 +66,12 @@
 								<c:forEach var="type" items="${types}">
 									<form method="post" action="emprodattribute.htm">
 										<input type="hidden" name="id"
-											value="${fn:escapeXml(type.id)}"> <input
+											value="${type.id}"> <input
 											type="hidden" name="type" value="category">
 
 										<tr style="height: 60px;" class="cartProduct">
 											<td class="center"><input type="text" name="name"
-												value="${fn:escapeXml(type.name)}" class="inputtable">
+												value="${type.name}" class="inputtable">
 											</td>
 											<td class="center">
 												<button onclick="handleButtonClick(event)" type="submit"
@@ -143,13 +143,13 @@
 								<c:forEach var="material" items="${materials}">
 									<form method="post" action="emprodattribute.htm">
 										<input type="hidden" name="id"
-											value="${fn:escapeXml(material.id)}"> <input
+											value="${material.id}"> <input
 											type="hidden" name="type" value="material">
 
 										<tr style="height: 60px;" class="cartProduct">
 											<td class="center u-border-1 u-border-grey-15 u-table-cell">
 												<input type="text" name="name"
-												value="${fn:escapeXml(material.name)}" class="inputtable">
+												value="${material.name}" class="inputtable">
 											</td>
 											<td class="center u-border-1 u-border-grey-15 u-table-cell">
 												<button onclick="handleButtonClick(event)" type="submit"
@@ -228,13 +228,13 @@
 								<c:forEach var="origin" items="${origins}">
 									<form method="post" action="emprodattribute.htm">
 										<input type="hidden" name="id"
-											value="${fn:escapeXml(origin.id)}"> <input
+											value="${origin.id}"> <input
 											type="hidden" name="type" value="origin">
 
 										<tr style="height: 60px;" class="cartProduct">
 											<td class="center u-border-1 u-border-grey-15 u-table-cell">
 												<input type="text" name="name"
-												value="${fn:escapeXml(origin.name)}" class="inputtable">
+												value="${origin.name}" class="inputtable">
 											</td>
 											<td class="center u-border-1 u-border-grey-15 u-table-cell">
 												<button onclick="handleButtonClick(event)" type="submit"
@@ -313,13 +313,13 @@
 								<c:forEach var="brand" items="${brands}">
 									<form method="post" action="emprodattribute.htm">
 										<input type="hidden" name="id"
-											value="${fn:escapeXml(brand.id)}"> <input
+											value="${brand.id}"> <input
 											type="hidden" name="type" value="brand">
 
 										<tr style="height: 60px;" class="cartProduct">
 											<td class="center u-border-1 u-border-grey-15 u-table-cell">
 												<input type="text" name="name"
-												value="${fn:escapeXml(brand.name)}" class="inputtable">
+												value="${brand.name}" class="inputtable">
 											</td>
 											<td class="center u-border-1 u-border-grey-15 u-table-cell">
 												<button onclick="handleButtonClick(event)" type="submit"

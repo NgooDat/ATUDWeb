@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html style="font-size: 16px;">
 
@@ -125,7 +124,7 @@ section {
 											<h2
 												class="u-cart-product-title u-product-control u-text u-block-90d4-44">
 												<a class="u-product-title-link"
-													href="productinfo.htm?proid=${detail.productId}">${fn:escapeXml(detail.name)}</a>
+													href="productinfo.htm?proid=${detail.productId}">${detail.name}</a>
 											</h2>
 										</td>
 										<td id="size${detail.cartid}"

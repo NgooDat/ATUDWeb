@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -149,7 +149,7 @@ body {
        		<div style="margin-top: 15px" class="wrap">
 	        	<label for="name">Tên sản phẩm:</label>
 	            <input class="input" type="hidden" value="${encrypt }" name="productId">
-	            <input type="text" id="name" value="${fn:escapeXml(not empty product.name ? fn:escapeXml(product.name) : '')}" name="name" placeholder="Nhập tên sản phẩm" required>
+	            <input type="text" id="name" value="${not empty product.name ? product.name : ''}" name="name" placeholder="Nhập tên sản phẩm" required>
         	</div>
             
             <div style="margin-top: 15px" class="wrap">

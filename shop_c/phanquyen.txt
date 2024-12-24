@@ -1,0 +1,22 @@
+phân quyền:
++ admin: toàn quyền
+
++ staff: 
+- Read, Update, Create: products, product_details, sizes, brands, types, materials, origins, orders, order_details, order_status.
+- Read: customers, feedbacks.
+- Read & Update: staff, accounts
+
++ customer: 
+- Read: products, product_details, sizes, brands, types, materials, origins.
+- Read, Create, Update: orders, carts, feedbacks.
+- Read & Update: customers, accounts
+
++ Visitor
+- Read: products, product_details, sizes, brands, types, materials, origins.
+- Create: accounts, customers
+
+
+admin_rule  "Fl0r3nt!n@"
+staff_rule  "@hB3qu0!O"
+customer_rule  "D0@ntu34yN7gd!"
+visitor_rule  "1Nt3rte!1aC0u^c!1"

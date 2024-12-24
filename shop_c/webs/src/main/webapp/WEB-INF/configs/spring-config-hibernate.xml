@@ -51,8 +51,8 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="sa"
-			p:password="123">
+			p:username="admin_rule"
+			p:password="Fl0r3nt!n@">
 	</bean>
 	
 	<bean id="employeeSessionFactory" 
@@ -79,8 +79,8 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="sa"
-			p:password="123">
+			p:username="staff_rule"
+			p:password="@hB3qu0!O">
 	</bean>
 	
 	<bean id="guestSessionFactory" 
@@ -106,8 +106,8 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="sa"
-			p:password="123">
+			p:username="customer_rule"
+			p:password="D0@ntu34yN7gd!">
 	</bean>
 	
 	<bean id="userSessionFactory" 
@@ -134,8 +134,8 @@
 	    	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 			p:driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 			p:url="jdbc:sqlserver://localhost:1433; Database=shop_c"
-			p:username="sa"
-			p:password="123">
+			p:username="visitor_rule"
+			p:password="1Nt3rte!1aC0u^c!1">
 	</bean>
 
 	

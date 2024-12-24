@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
 <!DOCTYPE html>
 <html style="font-size: 16px;" lang="en">
 
@@ -54,13 +54,13 @@
           <div class="u-form-group u-form-name">
             <label for="name-92f3" class="u-label">Họ và tên</label>
             
-            <input type="text" value="${fn:escapeXml(personal.name)}${fn:escapeXml(name)}" placeholder="Họ và tên" id="name-92f3" name="name" class="input u-input u-input-rectangle" required>
+            <input type="text" value="${personal.name}${name}" placeholder="Họ và tên" id="name-92f3" name="name" class="input u-input u-input-rectangle" required>
           </div>
 
           <!-- Số điện thoại -->
           <div class="u-form-phone u-form-group">
             <label for="phone-92f3" class="u-label">Số điện thoại</label>
-            <input type="number" value="${fn:escapeXml(personal.phone)}${fn:escapeXml(phone)}" placeholder="Số điện thoại" id="phone-92f3" name="phone" class="input u-input u-input-rectangle" required>
+            <input type="number" value="${personal.phone}${phone}" placeholder="Số điện thoại" id="phone-92f3" name="phone" class="input u-input u-input-rectangle" required>
                         <span id="phoneError" style="color: red; display: none;">Số điện thoại phải có 10 chữ số!</span> <!-- Hiển thị lỗi -->
             
           </div>
@@ -68,7 +68,7 @@
            <!-- Email -->
           <div class="u-form-email u-form-group">
             <label for="email-92f3" class="u-label">Email</label>
-            <input type="email" value="${fn:escapeXml(acc.email)}${fn:escapeXml(email)}" placeholder="Email" id="email-92f3" name="email" class="input u-input u-input-rectangle" required>
+            <input type="email" value="${acc.email}${email}" placeholder="Email" id="email-92f3" name="email" class="input u-input u-input-rectangle" required>
                 <span id="emailError" style="color: red; display: none;">Email không hợp lệ!</span> <!-- Hiển thị lỗi -->
             
           </div>

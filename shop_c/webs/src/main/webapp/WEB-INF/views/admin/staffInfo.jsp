@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -106,24 +106,24 @@ label {
 			class=" gioHang u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-custom-font u-font-ubuntu u-text u-text-default u-text-1">
 			Thông tin nhân viên</h2>
 		<form action="staffinfo.htm" method="POST" class="form">
-			<input type="hidden" name="id" value="${fn:escapeXml(staff.id)}" />
+			<input type="hidden" name="id" value="${staff.id}" />
 
 			<div class="wrap">
 				<label for="description">Tên</label> <input class="input"
 					type="text" name="name" placeholder="Nhập họ và tên"
-					value="${fn:escapeXml(staff.name)}" required>
+					value="${staff.name}" required>
 			</div>
 
 			<div class="wrap">
 				<label for="description">Số điện thoại</label> <input class="input"
 					type="text" name="phone" placeholder="Nhập số điện thoại"
-					value="${fn:escapeXml(staff.phone)}" required>
+					value="${staff.phone}" required>
 			</div>
 
 			<div class="wrap">
 				<label for="description">Địa chỉ</label> <input class="input"
 					type="text" name="address" placeholder="Nhập địa chỉ"
-					value="${fn:escapeXml(staff.address)}" required>
+					value="${staff.address}" required>
 			</div>
 
 			<div style="margin-bottom: 30px !important" class="wrap">
@@ -142,7 +142,7 @@ label {
 
 			<div class="wrap">
 				<label for="name">Email</label> <input class="input" type="text"
-					name="email" value="${fn:escapeXml(staff.account.email)}" required
+					name="email" value="${staff.account.email}" required
 					disabled placeholder="Nhập email">
 			</div>
 

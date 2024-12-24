@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html style="font-size: 16px;" lang="vi">
 
@@ -74,7 +73,7 @@
 										style="font-size: 2.0715em; margin-right: 3px; vertical-align: -11px"
 										data-block="17" data-block-type="Icon"><img src="/6f0e356639810/9752776.png"
 											alt="" data-original-src="/6f0e356639810/9752776.png"
-											data-color=""></span>&nbsp;${fn:escapeXml(product.name)}
+											data-color=""></span>&nbsp;${product.name}
 								</h3>
 								<!-- Price Display -->
 								<div style="display: flex;">
@@ -88,10 +87,10 @@
 								</div>
 
 								<ul style="margin-left: 60px;">
-									<li>Loại: ${fn:escapeXml(product.type.name)}</li>
-									<li>Nguồn gốc: ${fn:escapeXml(product.origin.name)}</li>
-									<li>Thương hiệu: ${fn:escapeXml(product.brand.name)}</li>
-									<li>Chất liệu: ${fn:escapeXml(product.material.name)}</li>
+									<li>Loại: ${product.type.name}</li>
+									<li>Nguồn gốc: ${product.origin.name}</li>
+									<li>Thương hiệu: ${product.brand.name}</li>
+									<li>Chất liệu: ${product.material.name}</li>
 
 
 								</ul>

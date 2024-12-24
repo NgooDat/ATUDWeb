@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html style="font-size: 16px;" lang="en">
 
@@ -57,7 +56,7 @@
       <div class="u-clearfix u-sheet u-sheet-1">
         <h2
           class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-custom-font u-font-ubuntu u-text u-text-default u-text-1">
-          ${fn:escapeXml(message)}</h2>
+          ${message}</h2>
         <div
           class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-border-3 u-border-grey-dark-1 u-line u-line-horizontal u-line-1">
         </div>
@@ -75,10 +74,10 @@
                 data-product-id="2">
                 <div class="u-container-layout u-similar-container u-container-layout-1"><!--product_image-->
                   <img alt="" class="u-expanded-width u-image u-image-round u-product-control u-radius u-image-1"
-                    src="images/products/${fn:escapeXml(product[3])}"><!--/product_image--><!--product_title-->
+                    src="images/products/${product[3]}"><!--/product_image--><!--product_title-->
                   <h4 class="u-align-center u-product-control u-text u-text-default u-text-2">
                     <a class="u-product-title-link"
-                      href="#"><!--product_title_content-->${fn:escapeXml(product[1])}<!--/product_title_content--></a>
+                      href="#"><!--product_title_content-->${product[1]}<!--/product_title_content--></a>
                   </h4><!--/product_title--><!--product_price-->
                   <div class="u-align-center u-product-control u-product-price u-product-price-1"
                     data-add-zero-cents="true">
@@ -88,7 +87,7 @@
                       </div>
                       <!--/product_old_price--><!--product_regular_price-->
                       <div class="u-price u-text-palette-2-base" style="font-size: 1.25rem; font-weight: 700;">
-                        <!--product_regular_price_content-->${fn:escapeXml(product[2])} <!--/product_regular_price_content-->
+                        <!--product_regular_price_content-->${product[2]} <!--/product_regular_price_content-->
                       </div>
                       <!--/product_regular_price-->
                     </div>
